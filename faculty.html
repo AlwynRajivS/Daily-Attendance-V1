@@ -159,99 +159,136 @@
 
   /* Modals */
   /* === History Modal === */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0,0,0,0.45);
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
-}
+ #historyModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(0,0,0,0.48);
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    -webkit-font-smoothing:antialiased;
+  }
 
-.modal-content {
-  position: relative;
-  background: #fff;
-  border-radius: 16px;
-  width: 95%;
-  max-width: 480px;
-  max-height: 85vh;          /* limit height for mobile */
-  overflow-y: auto;           /* scroll when content overflows */
-  padding: 20px 16px 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-  animation: slideUp 0.3s ease;
-}
+  #historyModal[aria-hidden="false"] { display: flex; }
 
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+  .history-card {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    max-height: 86vh;            /* responsive height */
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(22, 28, 45, 0.18);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 260ms cubic-bezier(.2,.9,.2,1);
+  }
 
-/* Close button */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  line-height: 26px;
-  transition: 0.2s;
-}
-.close-btn:hover { background: #dc2626; transform: scale(1.1); }
+  @keyframes slideUp {
+    from { transform: translateY(18px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
 
-/* Title */
-.modal-content h3 {
-  margin: 0 0 12px;
-  font-size: 18px;
-  color: #1e3a8a;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-}
-.modal-content h3::before {
-  content: "";
-  font-size: 20px;
-}
+  .history-header {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    background: linear-gradient(90deg,#1e3a8a,#2563eb);
+    color:#fff;
+  }
+  .history-header .title {
+    font-size:16px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .history-header .subtitle {
+    margin-left:auto;
+    font-size:13px;
+    opacity:0.95;
+    font-weight:600;
+  }
 
-/* Table */
-.modal-content table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.modal-content th {
-  background: #2563eb;
-  color: #fff;
-  padding: 8px;
-  text-align: left;
-  border-radius: 4px 4px 0 0;
-}
-.modal-content td {
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  word-break: break-word;
-}
-.modal-content tr:nth-child(even) {
-  background: #f8f9ff;
-}
+  .history-close {
+    position:absolute;
+    right:10px;
+    top:10px;
+    background:#ff6b6b;
+    color:#fff;
+    width:34px;height:34px;
+    border-radius:50%;
+    border:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-weight:700;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  .history-close:active { transform:scale(.98); }
 
-/* Summary */
-#historySummary {
-  text-align: center;
-  margin-top: 12px;
-  font-weight: 600;
-  color: #1e3a8a;
-}
+  .history-body {
+    padding: 12px 12px 16px;
+    overflow-y: auto;
+  }
+  /* Sticky table header inside scrollable body */
+  .history-table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+    min-width: 420px; /* keep columns readable on larger phones; will stack on tiny screens */
+  }
+
+  .history-table thead th {
+    position: sticky;
+    top: 0;
+    background: #eef4ff;
+    color: #0f172a;
+    font-weight:700;
+    padding:8px 10px;
+    text-align:left;
+    border-bottom: 1px solid rgba(14, 36, 70, 0.06);
+    z-index: 2;
+  }
+
+  .history-table tbody td {
+    padding:10px 10px;
+    border-bottom: 1px solid #f1f5ff;
+    color: #0f172a;
+    vertical-align: top;
+    word-break: break-word;
+  }
+
+  .history-table tbody tr:nth-child(even) { background: #fbfdff; }
+
+  /* Status color chips */
+  .status-chip {
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:12px;
+    color:#fff;
+  }
+  .status-present { background:#16a34a; }   /* green */
+  .status-absent  { background:#dc2626; }   /* red */
+  .status-od      { background:#7c3aed; }   /* purple */
+
+  /* Summary */
+  #historySummary {
+    margin-top:12px;
+    padding:10px 14px;
+    text-align:center;
+    font-weight:700;
+    color:#0f172a;
+    background:#f8fbff;
+    border-radius:10px;
+  }
   /* Mobile Responsive */
   @media (max-width: 768px) {
     table, thead, tbody, th, td, tr {
@@ -279,6 +316,30 @@
     td:nth-of-type(6):before { content: "Reason"; }
     td:nth-of-type(7):before { content: "Action"; }
    
+  }
+  @media (max-width: 480px) {
+    .history-table { min-width: initial; font-size:13px; }
+    /* Turn each table row to a stacked card look */
+    .history-table thead { display:none; }
+    .history-table tbody td {
+      display:block;
+      padding:10px 12px;
+    }
+    .history-table tbody td:before {
+      content: attr(data-label);
+      display:block;
+      font-weight:700;
+      color:#1e3a8a;
+      margin-bottom:6px;
+    }
+    .history-table tbody tr { margin-bottom:12px; display:block; box-shadow: 0 2px 10px rgba(12,18,46,0.04); border-radius:10px; overflow:hidden; }
+  }
+
+  /* Very small tweaks for ultra-small devices */
+  @media (max-height: 520px) {
+    .history-card { max-height: 92vh; }
+    .history-header { padding:12px; }
+    .history-close { width:30px;height:30px; right:8px; top:8px; }
   }
 </style>
 </head>
@@ -328,15 +389,33 @@
 <div id="summary"></div>
 
 <!-- History Modal -->
-<div id="historyModal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeHistory()">X</button>
-    <h3 id="historyTitle"></h3>
-    <table style="width:100%; border-collapse:collapse;">
-      <thead><tr><th>Date</th><th>Batch</th><th>Status</th><th>Reason</th></tr></thead>
-      <tbody id="historyBody"></tbody>
-    </table>
-    <div id="historySummary" style="text-align:center; margin-top:10px; font-weight:600;"></div>
+<div id="historyModal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="historyTitle">
+  <div class="history-card" role="document">
+    <div class="history-header">
+      <div class="title">📜 <span id="historyTitle" style="display:inline-block; margin-left:6px;">Attendance History</span></div>
+      <div class="subtitle" id="historyCount"> </div>
+      <button class="history-close" aria-label="Close history" onclick="closeHistory()">✕</button>
+    </div>
+
+    <div class="history-body">
+      <div style="overflow:auto;">
+        <table class="history-table" aria-describedby="historySummary">
+          <thead>
+            <tr>
+              <th style="width:22%;">Date</th>
+              <th style="width:18%;">Batch</th>
+              <th style="width:20%;">Status</th>
+              <th style="width:40%;">Reason</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <!-- Rows injected here -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="historySummary" aria-live="polite"></div>
+    </div>
   </div>
 </div>
 
@@ -533,9 +612,73 @@ function closePopup() {
 }
 
   }
+
+(function(){
+    const modal = document.getElementById('historyModal');
+
+    // openHistory should set aria-hidden to false and fill content, then show modal
+    window.openHistoryModal = function() {
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden'; // prevent body scroll while modal open
+      // focus management (optional)
+      const close = modal.querySelector('.history-close');
+      if (close) close.focus();
+    };
+
+    window.closeHistory = function() {
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = ''; // restore body scroll
+    };
+
+    // Close on backdrop click
+    modal.addEventListener('click', (ev) => {
+      if (ev.target === modal) closeHistory();
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+        closeHistory();
+      }
+    });
+
+    // Utility: render history rows safely (use your existing data-fetch code to populate)
+    // Example usage (from your existing viewHistory function):
+    //   populateHistory(recordsArray, name, rollNo)
+    window.populateHistory = function(records, nameRoll) {
+      const tbody = document.getElementById('historyBody');
+      const summary = document.getElementById('historySummary');
+      const count = document.getElementById('historyCount');
+      tbody.innerHTML = '';
+      let absent=0, od=0;
+      (records || []).forEach(r => {
+        const status = String(r.Status || '').trim();
+        if (status === 'Absent') absent++;
+        if (status === 'OD') od++;
+        const chipClass = status === 'Absent' ? 'status-absent' : (status === 'OD' ? 'status-od' : 'status-present');
+
+        const row = document.createElement('tr');
+        // On small screens we rely on data-label for stacked view
+        row.innerHTML = `
+          <td data-label="Date">${r.Date || '-'}</td>
+          <td data-label="Batch">${r.Batch || '-'}</td>
+          <td data-label="Status"><span class="status-chip ${chipClass}">${status || 'Present'}</span></td>
+          <td data-label="Reason">${r.Reason || '-'}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      summary.textContent = `Total: ${records.length || 0}  |  Absent: ${absent}  |  OD: ${od}`;
+      count.textContent = `${nameRoll || ''}`;
+      openHistoryModal();
+    };
+  })();
+
+  
 </script>
 </body>
 </html>
+
 
 
 
