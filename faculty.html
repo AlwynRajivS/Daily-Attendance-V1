@@ -228,17 +228,31 @@
 <div id="summary"></div>
 
 <!-- History Modal -->
+<!-- History Modal -->
 <div id="historyModal" class="modal">
   <div class="modal-content">
     <button class="close-btn" onclick="closeHistory()">X</button>
     <h3 id="historyTitle"></h3>
-    <table style="width:100%; border-collapse:collapse;">
-      <thead><tr><th>Date</th><th>Batch</th><th>Status</th><th>Reason</th></tr></thead>
-      <tbody id="historyBody"></tbody>
-    </table>
+
+    <!-- Scrollable table container -->
+    <div style="max-height:300px; overflow-y:auto; overflow-x:auto; border:1px solid #ddd; border-radius:8px;">
+      <table style="width:100%; border-collapse:collapse; min-width:400px;">
+        <thead style="background:#1e3a8a; color:white; position:sticky; top:0; z-index:2;">
+          <tr>
+            <th style="padding:8px;">Date</th>
+            <th style="padding:8px;">Batch</th>
+            <th style="padding:8px;">Status</th>
+            <th style="padding:8px;">Reason</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody" style="background:white;"></tbody>
+      </table>
+    </div>
+
     <div id="historySummary" style="text-align:center; margin-top:10px; font-weight:600;"></div>
   </div>
 </div>
+
 
 <!-- Call Modal -->
 <div id="callModal" class="modal">
@@ -427,4 +441,5 @@
 </script>
 </body>
 </html>
+
 
