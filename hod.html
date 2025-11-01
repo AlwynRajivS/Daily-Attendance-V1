@@ -167,6 +167,7 @@
 <body onload="initHOD()">
 
   <h2><i class="fa-solid fa-user-tie"></i> HoD Dashboard – Department: <span id="hodDept"></span></h2>
+  <button class="btn logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
 
   <!-- Attendance Summary -->
   <div class="section">
@@ -185,7 +186,7 @@
         <button class="btn" onclick="loadSummary()"><i class="fa-solid fa-sync"></i> Load</button>
         <button class="btn" onclick="downloadSummaryCSV()"><i class="fa-solid fa-file-csv"></i> Class Summary</button>
         <button class="btn" onclick="downloadStudentwiseCSV()"><i class="fa-solid fa-user-graduate"></i> Student Report</button>
-        <button class="btn logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        
       </div>
     </div>
     <div id="summaryGrid"></div>
@@ -504,4 +505,5 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
