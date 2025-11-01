@@ -320,22 +320,7 @@
   </div>
 </div>
 
-<script>
-function openStatusModal() {
-  document.getElementById('statusModal').style.display = 'flex';
-}
-function closeStatusModal() {
-  document.getElementById('statusModal').style.display = 'none';
-}
-function updateSliderLabel(el) {
-  const slider = el.nextElementSibling;
-  slider.setAttribute('data-label', el.checked ? 'Lock' : 'Unlock');
-  document.getElementById('lockMessage').textContent = el.checked ? 'Attendance Locked' : 'Attendance Unlocked';
-}
-</script>
 
-</body>
-</html>
 
   <!-- ===== JS Functions (SAME LOGIC, FIXED EVENTS) ===== -->
 
@@ -741,6 +726,7 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
 
