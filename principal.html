@@ -237,24 +237,46 @@
   }
 
   /* Mobile View */
-  @media (max-width: 600px) {
-    header {
-      flex-direction: column;
-      gap: 10px;
-      text-align: center;
-    }
-    .filters { flex-direction: column; align-items: center; }
-    .card { width: 90%; }
-    table { font-size: 12px; }
-     .btn {
-    background: linear-gradient(135deg,#2563eb,#1e40af);
+ @media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .filters { 
+    flex-direction: column; 
+    align-items: center; 
+  }
+
+  .card { 
+    width: 90%; 
+  }
+
+  table { 
+    font-size: 12px; 
+  }
+
+  .btn {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
     color: white;
     border: none;
     cursor: pointer;
     transition: 0.2s;
+    width: 90%;              /* 🔹 Uniform width across mobile buttons */
+    max-width: 300px;        /* 🔹 Prevents it from being too wide */
+    padding: 12px;           /* 🔹 Consistent button height */
+    font-size: 14px;         /* 🔹 Adjust text size for mobile */
+    border-radius: 8px;      /* 🔹 Rounded for better appearance */
+    display: block;          /* 🔹 Ensures it takes up full line */
+    margin: 6px auto;        /* 🔹 Centers the button */
   }
-  .btn:hover { transform: scale(1.05); }
+
+  .btn:hover {
+    transform: scale(1.05);
   }
+}
+
 </style>
 </head>
 
@@ -734,6 +756,7 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
 
