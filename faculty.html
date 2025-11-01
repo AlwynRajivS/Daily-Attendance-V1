@@ -289,258 +289,258 @@
 </div>
 
 <script>
-   let absentees = [];
-    let user;
+   /* ----------------------
+      Logic (from second code)
+      Kept behavior & improvements:
+      - lock check with lockedBy
+      - loads absentees and fullClass (window._facultyClassList)
+      - renders summary using full class list to compute % accurately
+      - mobile responsive view preserved by CSS (from first file)
+      - history & call modals
+      ---------------------- */
 
-    function initFaculty() {
-  user = requireRole("faculty"); // lowercase
-  if (!user) return;
+  let absentees = [];
+  let user;
 
-  // Save email
-  localStorage.setItem("facultyEmail", user.email);
+  function initFaculty() {
+    user = requireRole("faculty"); // expects common.js to provide this
+    if (!user) return;
 
-  document.getElementById("welcome").innerText =
-    `👨‍🏫Signed in as: ${user.name} (${user.email})`;
-}
+    // Save email
+    localStorage.setItem("facultyEmail", user.email);
 
-    async function loadAbsentees() {
-  const date = document.getElementById("date").value;
-  const batch = document.getElementById("batch").value;
-  const facultyEmail = localStorage.getItem("facultyEmail");
-
-  if (!date || !batch) return alert("Please select both date and batch.");
-  if (!facultyEmail) return alert("Faculty email not found. Please log in again.");
-
-  // --- Check lock status ---
-  let isLocked = false;
-  let lockedBy = "";
-  try {
-    const lockCheck = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "checkLockStatus", date, batch })
-    });
-    const lockData = await lockCheck.json();
-    if (lockData.locked) {
-      isLocked = true;
-      lockedBy = `${lockData.role || 'Unknown Role'} (${lockData.lockedBy || 'Unknown'})`;
-      alert(`Attendance is locked for this date & batch.\nLocked by admin.\nYou can only view data.`);
-    }
-  } catch (err) {
-    console.error("Lock check failed:", err);
+    document.getElementById("welcome").innerText =
+      `👨‍🏫 Signed in as: ${user.name} (${user.email})`;
   }
 
-  // --- Fetch data anyway (for view mode) ---
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "getAbsenteesForFaculty",
-      email: facultyEmail,
-      date,
-      batch
-    })
-  });
+  async function loadAbsentees() {
+    const date = document.getElementById("date").value;
+    const batch = document.getElementById("batch").value;
+    const facultyEmail = localStorage.getItem("facultyEmail");
 
-  const data = await res.json();
-  if (!data.success) return alert(data.message);
+    if (!date || !batch) return alert("Please select both date and batch.");
+    if (!facultyEmail) return alert("Faculty email not found. Please log in again.");
 
-  absentees = data.records || data.data || [];
-  window._facultyClassList = data.fullClass || [];
-
-  renderTable(isLocked);
-  renderSummary();
-
-  // --- Display section info ---
-  document.getElementById("facultySectionInfo").innerText =
-    `Loaded: ${data.department || user.department} - ${data.year || user.year} ${data.section || user.section}`;
-
-  // --- Disable or enable save button based on lock ---
-  const saveBtn = document.querySelector(".save");
-  saveBtn.disabled = isLocked;
-  saveBtn.style.opacity = isLocked ? "0.6" : "1.0";
-}
-
-
-    function renderSummary() {
-  const summaryDiv = document.getElementById("summary");
-  const classList = window._facultyClassList || [];
-  if (!classList.length) {
-    summaryDiv.innerHTML = "No class data available.";
-    return;
-  }
-
-  // Build totals
-  const classMap = {};
-  classList.forEach(s => {
-    const key = `${s.Year} ${s.Section}`;
-    if (!classMap[key]) classMap[key] = { total: 0, absent: 0 };
-    classMap[key].total++;
-  });
-
-  absentees.forEach(s => {
-    const key = `${s.Year} ${s.Section}`;
-    if (classMap[key]) classMap[key].absent++;
-  });
-
-  // Build summary grid
-  let html = '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">';
-  for (const key in classMap) {
-    const [year, section] = key.split(" ");
-    const c = classMap[key];
-    const present = c.total - c.absent;
-    const percent = ((present / c.total) * 100).toFixed(2);
-    html += `
-      <div style="background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); width:180px; text-align:center;">
-        <h4 style="margin:0 0 8px 0; color:#1e3a8a;">${year} ${section}</h4>
-        <p><strong>Total:</strong> ${c.total}</p>
-        <p style="color:green;"><strong>Present:</strong> ${present}</p>
-        <p style="color:red;"><strong>Absent/OD:</strong> ${c.absent}</p>
-        <p><strong>Attendance %:</strong> ${percent}%</p>
-      </div>`;
-  }
-  html += "</div>";
-  summaryDiv.innerHTML = html;
-}
-
-
-
-    function renderTable(isLocked = false) {
-  const tbody = document.querySelector("#dataTable tbody");
-  tbody.innerHTML = "";
-
-  absentees.forEach((s, i) => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${s.RollNo}</td>
-        <td>${s.Name}</td>
-        <td>${s.Year}</td>
-        <td>${s.Section}</td>
-        <td>
-          ${
-            isLocked
-              ? `<span>${s.Status}</span>`
-              : `<select onchange="absentees[${i}].Status=this.value">
-                   <option ${s.Status==='Absent'?'selected':''}>Absent</option>
-                   <option ${s.Status==='OD'?'selected':''}>OD</option>
-                 </select>`
-          }
-        </td>
-        <td>
-          ${
-            isLocked
-              ? `<span>${s.Reason || '-'}</span>`
-              : `<input type="text" value="${s.Reason||''}" onchange="absentees[${i}].Reason=this.value" style="width:120px;">`
-          }
-        </td>
-        <td>
-          <button class="btn" onclick="viewHistory('${s.RollNo}','${s.Name}')">History</button>
-          <button class="btn" onclick="callParent('${s.ParentPhone||''}', ${i})">Call</button>
-          ${
-            !isLocked
-              ? `<button class="btn" onclick="editParent(${i})">Edit</button>`
-              : ''
-          }
-        </td>
-      </tr>`;
-  });
-}
-
-
-    function editParent(index) {
-      const s = absentees[index];
-      //const newName = prompt("Edit Parent Name:", s.ParentName || "");
-      const newPhone = prompt("Edit Parent Phone:", s.ParentPhone || "");
-      //if (newName !== null) absentees[index].ParentName = newName;
-      if (newPhone !== null) absentees[index].ParentPhone = newPhone;
-      alert("Parent info updated locally. Click 'Save Changes' to store.");
-    }
-
-    async function viewHistory(rollNo, name) {
-      const res = await fetch(SCRIPT_URL, {
+    // --- Check lock status ---
+    let isLocked = false;
+    let lockedBy = "";
+    try {
+      const lockCheck = await fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "getStudentHistory", rollNo })
+        body: JSON.stringify({ action: "checkLockStatus", date, batch })
       });
-      const data = await res.json();
-      if (!data.success) return alert(data.message);
-
-      const records = data.records;
-      const body = document.getElementById("historyBody");
-      const title = document.getElementById("historyTitle");
-      const summary = document.getElementById("historySummary");
-      body.innerHTML = "";
-      title.innerText = `📜 History of ${name} (${rollNo})`;
-
-      let absentCount = 0, odCount = 0;
-      records.forEach(r => {
-        if (r.Status === "Absent") absentCount++;
-        if (r.Status === "OD") odCount++;
-        body.innerHTML += `<tr>
-          <td>${r.Date}</td><td>${r.Batch}</td>
-          <td>${r.Status}</td><td>${r.Reason || ''}</td></tr>`;
-      });
-      summary.innerHTML = `Total: ${records.length} | Absent: ${absentCount} | OD: ${odCount}`;
-
-      document.getElementById("historyModal").style.display = "flex";
+      const lockData = await lockCheck.json();
+      if (lockData.locked) {
+        isLocked = true;
+        lockedBy = `${lockData.role || 'Unknown Role'} (${lockData.lockedBy || 'Unknown'})`;
+        alert(`Attendance is locked for this date & batch.\nLocked by admin.\nYou can only view data.`);
+      }
+    } catch (err) {
+      console.error("Lock check failed:", err);
     }
 
-    function closeHistory() {
-      document.getElementById("historyModal").style.display = "none";
+    // --- Fetch data anyway (for view mode) ---
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "getAbsenteesForFaculty",
+        email: facultyEmail,
+        date,
+        batch
+      })
+    });
+
+    const data = await res.json();
+    if (!data.success) return alert(data.message);
+
+    absentees = data.records || data.data || [];
+    window._facultyClassList = data.fullClass || [];
+
+    renderTable(isLocked);
+    renderSummary();
+
+    // --- Display section info ---
+    document.getElementById("facultySectionInfo").innerText =
+      `Loaded: ${data.department || user.department} - ${data.year || user.year} ${data.section || user.section}`;
+
+    // --- Disable or enable save button based on lock ---
+    const saveBtn = document.querySelector(".save");
+    saveBtn.disabled = isLocked;
+    saveBtn.style.opacity = isLocked ? "0.6" : "1.0";
+  }
+
+  function renderSummary() {
+    const summaryDiv = document.getElementById("summary");
+    const classList = window._facultyClassList || [];
+    if (!classList.length) {
+      summaryDiv.innerHTML = "No class data available.";
+      return;
     }
 
-    function callParent(phoneNumber, index) {
-  const s = absentees[index];
-  if (!s.ParentPhone && !phoneNumber)
-    return alert("Parent phone number not available!");
+    // Build totals
+    const classMap = {};
+    classList.forEach(s => {
+      const key = `${s.Year} ${s.Section}`;
+      if (!classMap[key]) classMap[key] = { total: 0, absent: 0 };
+      classMap[key].total++;
+    });
 
-  const parentName = s.ParentName || "Not provided";
-  const parentPhone = s.ParentPhone || phoneNumber || "Not provided";
+    absentees.forEach(s => {
+      const key = `${s.Year} ${s.Section}`;
+      if (classMap[key]) classMap[key].absent++;
+    });
 
-  const infoDiv = document.getElementById("callInfo");
-  infoDiv.innerHTML = `
-    <p><strong>Parent Name:</strong> ${parentName}</p>
-    <p><strong>Phone Number:</strong> ${parentPhone}</p>
-    <button onclick="makeCall('${parentPhone}')" 
-      style="background:#2563eb; color:white; border:none; padding:8px 14px;
-             border-radius:6px; margin-top:10px; cursor:pointer; font-weight:600;">
-      Call Parent
-    </button>
-  `;
+    // Build summary grid
+    let html = '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">';
+    for (const key in classMap) {
+      const [year, section] = key.split(" ");
+      const c = classMap[key];
+      const present = c.total - c.absent;
+      const percent = ((present / c.total) * 100).toFixed(2);
+      html += `
+        <div style="background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); width:180px; text-align:center;">
+          <h4 style="margin:0 0 8px 0; color:#1e3a8a;">${year} ${section}</h4>
+          <p><strong>Total:</strong> ${c.total}</p>
+          <p style="color:green;"><strong>Present:</strong> ${present}</p>
+          <p style="color:red;"><strong>Absent/OD:</strong> ${c.absent}</p>
+          <p><strong>Attendance %:</strong> ${percent}%</p>
+        </div>`;
+    }
+    html += "</div>";
+    summaryDiv.innerHTML = html;
+  }
 
-  document.getElementById("callModal").style.display = "flex";
-}
+  function renderTable(isLocked = false) {
+    const tbody = document.querySelector("#dataTable tbody");
+    tbody.innerHTML = "";
 
-function makeCall(number) {
-  if (!number || number === "Not provided")
-    return alert("Phone number not available!");
-  window.open(`tel:${number}`);
-}
+    absentees.forEach((s, i) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${s.RollNo}</td>
+          <td>${s.Name}</td>
+          <td>${s.Year}</td>
+          <td>${s.Section}</td>
+          <td>
+            ${
+              isLocked
+                ? `<span>${s.Status}</span>`
+                : `<select onchange="absentees[${i}].Status=this.value">
+                     <option ${s.Status==='Absent'?'selected':''}>Absent</option>
+                     <option ${s.Status==='OD'?'selected':''}>OD</option>
+                   </select>`
+            }
+          </td>
+          <td>
+            ${
+              isLocked
+                ? `<span>${s.Reason || '-'}</span>`
+                : `<input type="text" value="${s.Reason||''}" onchange="absentees[${i}].Reason=this.value" style="width:120px;">`
+            }
+          </td>
+          <td>
+            <button class="btn" onclick="viewHistory('${s.RollNo}','${s.Name}')">History</button>
+            <button class="btn" onclick="callParent('${s.ParentPhone||''}', ${i})">Call</button>
+            ${
+              !isLocked
+                ? `<button class="btn" onclick="editParent(${i})">Edit</button>`
+                : ''
+            }
+          </td>
+        </tr>`;
+    });
+  }
 
-function closeCall() {
-  document.getElementById("callModal").style.display = "none";
-}
+  function editParent(index) {
+    const s = absentees[index];
+    //const newName = prompt("Edit Parent Name:", s.ParentName || "");
+    const newPhone = prompt("Edit Parent Phone:", s.ParentPhone || "");
+    //if (newName !== null) absentees[index].ParentName = newName;
+    if (newPhone !== null) absentees[index].ParentPhone = newPhone;
+    alert("Parent info updated locally. Click 'Save Changes' to store.");
+  }
 
-    async function saveUpdates() {
-  const date = document.getElementById("date").value;
-  const batch = document.getElementById("batch").value;
-  if (!date) return alert("Select a date first!");
+  async function viewHistory(rollNo, name) {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "getStudentHistory", rollNo })
+    });
+    const data = await res.json();
+    if (!data.success) return alert(data.message);
 
-  const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "saveFacultyUpdates",
-      date, batch, updates: absentees
-    }),
-  });
-  const result = await res.json();
-  alert(result.message);
-  if (result.success) await loadAbsentees(); // refresh local data from sheet
-}
+    const records = data.records;
+    const body = document.getElementById("historyBody");
+    const title = document.getElementById("historyTitle");
+    const summary = document.getElementById("historySummary");
+    body.innerHTML = "";
+    title.innerText = `📜 History of ${name} (${rollNo})`;
 
+    let absentCount = 0, odCount = 0;
+    records.forEach(r => {
+      if (r.Status === "Absent") absentCount++;
+      if (r.Status === "OD") odCount++;
+      body.innerHTML += `<tr>
+        <td>${r.Date}</td><td>${r.Batch}</td>
+        <td>${r.Status}</td><td>${r.Reason || ''}</td></tr>`;
+    });
+    summary.innerHTML = `Total: ${records.length} | Absent: ${absentCount} | OD: ${odCount}`;
+
+    document.getElementById("historyModal").style.display = "flex";
+  }
+
+  function closeHistory() {
+    document.getElementById("historyModal").style.display = "none";
+  }
+
+  function callParent(phoneNumber, index) {
+    const s = absentees[index];
+    if (!s.ParentPhone && !phoneNumber)
+      return alert("Parent phone number not available!");
+
+    const parentName = s.ParentName || "Not provided";
+    const parentPhone = s.ParentPhone || phoneNumber || "Not provided";
+
+    const infoDiv = document.getElementById("callInfo");
+    infoDiv.innerHTML = `
+      <p><strong>Parent Name:</strong> ${parentName}</p>
+      <p><strong>Phone Number:</strong> ${parentPhone}</p>
+      <button onclick="makeCall('${parentPhone}')" 
+        style="background:#2563eb; color:white; border:none; padding:8px 14px;
+               border-radius:6px; margin-top:10px; cursor:pointer; font-weight:600;">
+        Call Parent
+      </button>
+    `;
+
+    document.getElementById("callModal").style.display = "flex";
+  }
+
+  function makeCall(number) {
+    if (!number || number === "Not provided")
+      return alert("Phone number not available!");
+    window.open(`tel:${number}`);
+  }
+
+  function closeCall() {
+    document.getElementById("callModal").style.display = "none";
+  }
+
+  async function saveUpdates() {
+    const date = document.getElementById("date").value;
+    const batch = document.getElementById("batch").value;
+    if (!date) return alert("Select a date first!");
+
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "saveFacultyUpdates",
+        date, batch, updates: absentees
+      }),
+    });
+    const result = await res.json();
+    alert(result.message);
+    if (result.success) await loadAbsentees(); // refresh local data from sheet
+  }
 
 </script>
 </body>
 </html>
-
-
-
-
-
