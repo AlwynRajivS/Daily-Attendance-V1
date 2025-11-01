@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Principal Dashboard – College Attendance Overview</title>
   <script src="common.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
     :root {
@@ -11,6 +12,7 @@
       --primary-dark: #1e40af;
       --bg: #f0f4ff;
       --text-dark: #1e3a8a;
+      --danger: #dc3545;
     }
 
     body {
@@ -20,7 +22,7 @@
       padding: 0;
     }
 
-    /* === Top Header Bar === */
+    /* === Header === */
     header {
       position: sticky;
       top: 0;
@@ -32,11 +34,13 @@
       align-items: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
       z-index: 1000;
+      flex-wrap: wrap;
+      gap: 10px;
     }
+
     header h2 {
       margin: 0;
       font-size: 1.2rem;
-      text-align: left;
     }
 
     .btn {
@@ -48,10 +52,26 @@
       cursor: pointer;
       transition: all 0.25s ease;
       font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+
+    .btn i {
+      font-size: 0.95rem;
+    }
+
     .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: #b22a38;
     }
 
     main {
@@ -80,6 +100,16 @@
       font-size: 0.9rem;
     }
 
+    /* === Button Group Responsive === */
+    .filters {
+      text-align: center;
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
     /* === Summary Boxes === */
     .top-summary {
       display: flex;
@@ -88,6 +118,7 @@
       gap: 15px;
       margin-top: 20px;
     }
+
     .top-box {
       background: white;
       border-radius: 12px;
@@ -97,6 +128,7 @@
       text-align: center;
       transition: transform 0.2s ease;
     }
+
     .top-box:hover {
       transform: scale(1.05);
     }
@@ -109,6 +141,7 @@
       justify-content: center;
       margin-top: 15px;
     }
+
     .card {
       background: white;
       padding: 15px;
@@ -119,119 +152,76 @@
       cursor: pointer;
       transition: all 0.25s ease;
     }
+
     .card:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
 
-    /* === Table === */
+    /* === HoD Table === */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
-      overflow-x: auto;
-      display: block;
+      text-align: center;
+      min-width: 700px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 10px;
-      text-align: center;
       font-size: 0.9rem;
     }
+
     th {
       background: var(--primary);
       color: white;
       font-weight: 600;
     }
 
-    /* === Switch === */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 70px;
-      height: 30px;
-      vertical-align: middle;
-    }
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 30px;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 24px; width: 24px;
-      left: 3px; bottom: 3px;
-      background-color: white;
-      transition: transform 0.4s ease;
-      border-radius: 50%;
-    }
-    input:checked + .slider:before {
-      transform: translateX(40px);
-    }
-    input:checked + .slider {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    }
-    .slider::after {
-      content: attr(data-label);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 12px;
-      font-weight: 600;
-      color: white;
-      pointer-events: none;
+    tr:hover {
+      background: #f2f6fc;
     }
 
-    .filters, .lock-toggle {
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    /* === Responsive === */
-    @media (max-width: 600px) {
+    /* === Responsive Fix === */
+    @media (max-width: 768px) {
       header h2 {
         font-size: 1rem;
       }
+
       .btn {
+        font-size: 0.85rem;
         padding: 6px 10px;
-        font-size: 0.85rem;
       }
-      .top-box {
-        min-width: 100px;
-        font-size: 0.85rem;
+
+      .filters {
+        flex-direction: column;
       }
-      .card {
-        width: 160px;
-        font-size: 0.85rem;
-      }
-      .filters label {
-        display: block;
-        margin: 5px 0;
-      }
+
       table {
         font-size: 0.8rem;
+        min-width: 600px;
       }
     }
 
-    /* === Light animation background === */
+    /* === Animated Background === */
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: linear-gradient(135deg, rgba(37,99,235,0.05), rgba(255,255,255,0.8));
       animation: gradientMove 8s ease infinite alternate;
       z-index: -1;
     }
+
     @keyframes gradientMove {
       from { background-position: 0% 50%; }
       to { background-position: 100% 50%; }
@@ -242,8 +232,10 @@
 <body onload="initPrincipal()">
 
   <header>
-    <h2>Principal Dashboard – Attendance Overview</h2>
-    <button class="btn" onclick="logout()">Logout</button>
+    <h2><i class="fa-solid fa-school"></i> Principal Dashboard</h2>
+    <button class="btn btn-danger" onclick="logout()">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </button>
   </header>
 
   <main>
@@ -251,24 +243,25 @@
     <div class="top-summary" id="collegeTopSummary"></div>
 
     <section>
-      <h3>College-Wide Attendance Summary</h3>
+      <h3><i class="fa-solid fa-chart-line"></i> College-Wide Attendance Summary</h3>
+
       <div class="filters">
-        <label>Date:</label>
+        <label><i class="fa-solid fa-calendar-day"></i> Date:</label>
         <input type="date" id="date">
-        <label>Batch:</label>
+        <label><i class="fa-solid fa-clock"></i> Batch:</label>
         <select id="batch">
           <option value="FN">FN</option>
           <option value="AN">AN</option>
         </select>
-        <br>
-        <button class="btn" onclick="loadCollegeSummary()">Load Summary</button>
-        <button class="btn" onclick="downloadCollegeSummary()">Download Summary</button>
-        <button class="btn" onclick="downloadAbsentReport()">Download Absent CSV</button>
-        <button class="btn" onclick="downloadODReport()">Download OD CSV</button>
-        <button class="btn" onclick="loadAttendanceStatus()">View Status</button>
+
+        <button class="btn" onclick="loadCollegeSummary()"><i class="fa-solid fa-database"></i> Load Summary</button>
+        <button class="btn" onclick="downloadCollegeSummary()"><i class="fa-solid fa-file-csv"></i> Download Summary</button>
+        <button class="btn" onclick="downloadAbsentReport()"><i class="fa-solid fa-user-xmark"></i> Absent CSV</button>
+        <button class="btn" onclick="downloadODReport()"><i class="fa-solid fa-briefcase"></i> OD CSV</button>
+        <button class="btn" onclick="loadAttendanceStatus()"><i class="fa-solid fa-eye"></i> View Status</button>
       </div>
 
-      <div class="lock-toggle">
+      <div class="lock-toggle" style="text-align:center; margin-top:20px;">
         <label class="switch">
           <input type="checkbox" id="lockToggleBtn" onchange="updateSliderLabel(this)">
           <span class="slider" data-label="Unlock"></span>
@@ -283,20 +276,29 @@
 
     <!-- Manage HoD Users -->
     <section>
-      <h3>Manage HoD Users</h3>
-      <div style="text-align:center; margin-bottom:10px;">
-        <button class="btn" onclick="downloadHoDTemplate()">Download Template</button>
+      <h3><i class="fa-solid fa-user-tie"></i> Manage HoD Users</h3>
+      <div class="filters">
+        <button class="btn" onclick="downloadHoDTemplate()">
+          <i class="fa-solid fa-download"></i> Template
+        </button>
         <input type="file" id="hodFile" class="file-input" accept=".csv">
-        <button class="btn" onclick="uploadHoDUsers()">Upload HoDs</button>
+        <button class="btn" onclick="uploadHoDUsers()">
+          <i class="fa-solid fa-upload"></i> Upload HoDs
+        </button>
       </div>
-      <table id="hodTable">
-        <thead>
-          <tr><th>Email</th><th>Name</th><th>Role</th><th>Department</th><th>Action</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+
+      <div class="table-container">
+        <table id="hodTable">
+          <thead>
+            <tr><th>Email</th><th>Name</th><th>Role</th><th>Department</th><th>Action</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
   </main>
+
+
 
  
 
@@ -698,5 +700,6 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
