@@ -237,8 +237,47 @@ header h2 {
     cursor: pointer;
   }
 
+  .top-box {
+  background: white;                 /* Base background */
+  color: #1e3a8a;                    /* Default text color */
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  flex: 1;
+  transition: transform 0.2s ease;
+}
+
+.top-box strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.top-box:hover {
+  transform: scale(1.05);
+}
+
+/* 🔹 Specific colors per type */
+.top-box.total { background: #e0f2fe; color: #1e3a8a; }     /* Light blue */
+.top-box.present { background: #dcfce7; color: #166534; }   /* Light green */
+.top-box.absent { background: #fee2e2; color: #991b1b; }    /* Light red */
+.top-box.od { background: #fef3c7; color: #92400e; }        /* Light orange */
+.top-box.percent { background: #ede9fe; color: #5b21b6; }   /* Light violet */
+
+
+
   /* Mobile View */
  @media (max-width: 600px) {
+
+   .top-box {
+    font-size: 14px;
+    width: 90%;
+    margin: 6px auto;
+  }
   header {
     flex-direction: column;
     gap: 10px;
@@ -417,13 +456,13 @@ allOD = data.od || [];
       const percent = ((present/total)*100).toFixed(2);
 
       const div = document.getElementById("collegeTopSummary");
-      div.innerHTML = `
-        <div class="top-box"><strong>Total Students</strong><br>${total}</div>
-        <div class="top-box" style="color:green;"><strong>Present</strong><br>${present}</div>
-        <div class="top-box" style="color:red;"><strong>Absent</strong><br>${absent}</div>
-        <div class="top-box" style="color:orange;"><strong>OD</strong><br>${od}</div>
-        <div class="top-box" style="color:violet;"><strong>Attendance %</strong><br>${percent}</div>
-      `;
+     div.innerHTML = `
+  <div class="top-box total"><strong>Total Students</strong><br>${total}</div>
+  <div class="top-box present"><strong>Present</strong><br>${present}</div>
+  <div class="top-box absent"><strong>Absent</strong><br>${absent}</div>
+  <div class="top-box od"><strong>OD</strong><br>${od}</div>
+  <div class="top-box percent"><strong>Attendance %</strong><br>${percent}</div>
+`;
     }
 
     /* === Department Summary === */
@@ -757,6 +796,7 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
 
