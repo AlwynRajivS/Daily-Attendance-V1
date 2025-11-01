@@ -237,25 +237,31 @@ header h2 {
     cursor: pointer;
   }
 
- .top-box {
+.top-box {
   flex: 1;
   background: white;
-  color: #1e3a8a;
   border-radius: 10px;
-  padding: 10px;         /* 🔹 Slightly reduced padding */
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
+  padding: 10px;
   text-align: center;
+  font-family: 'Segoe UI', sans-serif;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s ease;
 }
 
 .top-box strong {
   display: block;
-  font-size: 15px;
-  margin-bottom: 1px;
+  font-size: 14px;
+  color: #1e3a8a;
+  margin-bottom: 4px;
 }
+
+.top-box .value {
+  display: block;
+  font-size: 24px;           /* 🔹 Larger number font size */
+  font-weight: 700;          /* 🔹 Bold for visibility */
+  margin-top: 3px;
+}
+
 
 .top-box:hover {
   transform: scale(1.05);
@@ -456,12 +462,12 @@ allOD = data.od || [];
       const percent = ((present/total)*100).toFixed(2);
 
       const div = document.getElementById("collegeTopSummary");
-     div.innerHTML = `
-  <div class="top-box total"><strong>Total Students</strong><br>${total}</div>
-  <div class="top-box present"><strong>Present</strong><br>${present}</div>
-  <div class="top-box absent"><strong>Absent</strong><br>${absent}</div>
-  <div class="top-box od"><strong>OD</strong><br>${od}</div>
-  <div class="top-box percent"><strong>Attendance %</strong><br>${percent}</div>
+    div.innerHTML = `
+  <div class="top-box total"><strong>Total Students</strong><br><span class="value">${total}</span></div>
+  <div class="top-box present"><strong>Present</strong><br><span class="value">${present}</span></div>
+  <div class="top-box absent"><strong>Absent</strong><br><span class="value">${absent}</span></div>
+  <div class="top-box od"><strong>OD</strong><br><span class="value">${od}</span></div>
+  <div class="top-box percent"><strong>Attendance %</strong><br><span class="value">${percent}</span></div>
 `;
     }
 
@@ -796,6 +802,7 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
 
