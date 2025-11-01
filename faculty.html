@@ -347,68 +347,95 @@
   }
 
   function renderSummary() {
-    const summaryDiv = document.getElementById("summary");
-    summaryDiv.innerHTML = "";
-    if (!absentees.length) {
-      summaryDiv.innerHTML = "<p>No records found.</p>";
-      return;
-    }
-    const classMap = {};
-    absentees.forEach(s => {
-      const key = `${s.Year} ${s.Section}`;
-      if (!classMap[key]) classMap[key] = { total: 0, present: 0, absent: 0 };
-      classMap[key].total++;
-      if (s.Status === "Absent" || s.Status === "OD") classMap[key].absent++;
-      else classMap[key].present++;
-    });
-    for (const key in classMap) {
-      const c = classMap[key];
-      const percent = ((c.present / c.total) * 100).toFixed(2);
-      summaryDiv.innerHTML += `
-        <div class="summary-card">
-          <h4 style="color:#1e3a8a; margin:0 0 8px;">${key}</h4>
-          <p><b>Total:</b> ${c.total}</p>
-          <p style="color:green;"><b>Present:</b> ${c.present}</p>
-          <p style="color:red;"><b>Absent/OD:</b> ${c.absent}</p>
-          <p><b>Attendance:</b> ${percent}%</p>
-        </div>`;
-    }
+  const summaryDiv = document.getElementById("summary");
+  const classList = window._facultyClassList || [];
+  if (!classList.length) {
+    summaryDiv.innerHTML = "No class data available.";
+    return;
   }
 
-  function renderTable(isLocked = false) {
-    const tbody = document.querySelector("#dataTable tbody");
-    tbody.innerHTML = "";
-    absentees.forEach((s, i) => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${s.RollNo}</td>
-          <td>${s.Name}</td>
-          <td>${s.Year}</td>
-          <td>${s.Section}</td>
-          <td>${isLocked ? `<span>${s.Status}</span>` :
-            `<select onchange="absentees[${i}].Status=this.value">
-              <option ${s.Status==='Absent'?'selected':''}>Absent</option>
-              <option ${s.Status==='OD'?'selected':''}>OD</option>
-            </select>`}
-          </td>
-          <td>${isLocked ? `<span>${s.Reason||'-'}</span>` :
-            `<input type="text" value="${s.Reason||''}" onchange="absentees[${i}].Reason=this.value" style="width:120px;">`}
-          </td>
-          <td>
-            <button class="btn" onclick="viewHistory('${s.RollNo}','${s.Name}')">📜</button>
-            <button class="btn" onclick="callParent('${s.ParentPhone||''}', ${i})">📞</button>
-            ${!isLocked ? `<button class="btn" onclick="editParent(${i})">✏️</button>` : ''}
-          </td>
-        </tr>`;
-    });
+  // Build totals
+  const classMap = {};
+  classList.forEach(s => {
+    const key = `${s.Year} ${s.Section}`;
+    if (!classMap[key]) classMap[key] = { total: 0, absent: 0 };
+    classMap[key].total++;
+  });
+
+  absentees.forEach(s => {
+    const key = `${s.Year} ${s.Section}`;
+    if (classMap[key]) classMap[key].absent++;
+  });
+
+  // Build summary grid
+  let html = '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">';
+  for (const key in classMap) {
+    const [year, section] = key.split(" ");
+    const c = classMap[key];
+    const present = c.total - c.absent;
+    const percent = ((present / c.total) * 100).toFixed(2);
+    html += `
+      <div style="background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); width:180px; text-align:center;">
+        <h4 style="margin:0 0 8px 0; color:#1e3a8a;">${year} ${section}</h4>
+        <p><strong>Total:</strong> ${c.total}</p>
+        <p style="color:green;"><strong>Present:</strong> ${present}</p>
+        <p style="color:red;"><strong>Absent/OD:</strong> ${c.absent}</p>
+        <p><strong>Attendance %:</strong> ${percent}%</p>
+      </div>`;
   }
+  html += "</div>";
+  summaryDiv.innerHTML = html;
+}
+  function renderTable(isLocked = false) {
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+
+  absentees.forEach((s, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${s.RollNo}</td>
+        <td>${s.Name}</td>
+        <td>${s.Year}</td>
+        <td>${s.Section}</td>
+        <td>
+          ${
+            isLocked
+              ? `<span>${s.Status}</span>`
+              : `<select onchange="absentees[${i}].Status=this.value">
+                   <option ${s.Status==='Absent'?'selected':''}>Absent</option>
+                   <option ${s.Status==='OD'?'selected':''}>OD</option>
+                 </select>`
+          }
+        </td>
+        <td>
+          ${
+            isLocked
+              ? `<span>${s.Reason || '-'}</span>`
+              : `<input type="text" value="${s.Reason||''}" onchange="absentees[${i}].Reason=this.value" style="width:120px;">`
+          }
+        </td>
+        <td>
+          <button class="btn" onclick="viewHistory('${s.RollNo}','${s.Name}')">History</button>
+          <button class="btn" onclick="callParent('${s.ParentPhone||''}', ${i})">Call</button>
+          ${
+            !isLocked
+              ? `<button class="btn" onclick="editParent(${i})">Edit</button>`
+              : ''
+          }
+        </td>
+      </tr>`;
+  });
+}
 
   function editParent(index) {
-    const s = absentees[index];
-    const newPhone = prompt("Edit Parent Phone:", s.ParentPhone || "");
-    if (newPhone !== null) absentees[index].ParentPhone = newPhone;
-    alert("Parent info updated locally. Click 'Save Changes' to store.");
-  }
+      const s = absentees[index];
+      //const newName = prompt("Edit Parent Name:", s.ParentName || "");
+      const newPhone = prompt("Edit Parent Phone:", s.ParentPhone || "");
+      //if (newName !== null) absentees[index].ParentName = newName;
+      if (newPhone !== null) absentees[index].ParentPhone = newPhone;
+      alert("Parent info updated locally. Click 'Save Changes' to store.");
+    }
+
 
   async function viewHistory(rollNo, name) {
     const res = await fetch(SCRIPT_URL, {
@@ -466,6 +493,7 @@
 </script>
 </body>
 </html>
+
 
 
 
