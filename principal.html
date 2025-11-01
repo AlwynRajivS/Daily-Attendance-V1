@@ -7,65 +7,54 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    /* General Styling */
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f3f7ff;
-      margin: 0;
-      padding: 0;
-    }
+    /* Global Look */
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f3f7ff; margin: 0; padding: 0; color: #1e293b; }
 
+    /* Header */
     header {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       color: white;
-      text-align: center;
-      padding: 15px 10px;
-      position: relative;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
     }
-
     header h2 {
       margin: 0;
       font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-
     header button {
-      position: absolute;
-      right: 15px;
-      top: 12px;
-      background: white;
-      color: #1e3a8a;
+      background: #dc2626;
+      color: white;
       border: none;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       transition: 0.3s;
     }
+    header button:hover { background: #b91c1c; }
 
-    header button:hover {
-      background: #2563eb;
-      color: white;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    h3 {
-      color: #1e3a8a;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 18px;
-    }
-
+    /* Sections */
+    .container { padding: 20px; }
     .section {
       background: white;
-      padding: 15px;
+      padding: 20px;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       margin-bottom: 25px;
+    }
+    h3 {
+      color: #1e3a8a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     /* Buttons and Inputs */
@@ -76,7 +65,6 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
-
     .btn {
       background: linear-gradient(135deg, #2563eb, #1e40af);
       color: white;
@@ -84,120 +72,70 @@
       cursor: pointer;
       transition: 0.3s;
     }
+    .btn:hover { transform: scale(1.05); }
+    .btn i { margin-right: 6px; }
 
-    .btn i {
-      margin-right: 6px;
-    }
-
-    .btn:hover {
-      transform: scale(1.05);
-    }
-
-    /* Summary Cards */
-    .top-summary {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-
-    .top-box {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 15px 25px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 600;
-      color: #1e3a8a;
-    }
-
-    /* Grids */
+    /* Summary Grid */
     #summaryGrid, #classGrid {
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
       justify-content: center;
+      background: #eef3ff;
+      padding: 15px;
+      border-radius: 10px;
       margin-top: 15px;
     }
-
-    #classGrid h3 {
-      width: 100%;
-      text-align: center;
-      color: #1e3a8a;
-      margin-bottom: 15px;
-    }
-
     .card {
       background: white;
       padding: 15px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       width: 180px;
       text-align: center;
       cursor: pointer;
       transition: transform 0.2s;
     }
+    .card:hover { transform: scale(1.05); }
 
-    .card:hover {
-      transform: scale(1.05);
-    }
-
-    /* Tables */
+    /* Table */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-
     th, td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: center;
+      font-size: 14px;
     }
-
-    th {
-      background: #1e3a8a;
-      color: white;
-    }
+    th { background: #1e3a8a; color: white; }
 
     /* Lock Slider */
     .lock-toggle {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 15px 0;
       flex-wrap: wrap;
       gap: 10px;
+      margin: 15px 0;
     }
-
     .switch {
       position: relative;
       display: inline-block;
       width: 70px;
       height: 30px;
-      vertical-align: middle;
     }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
+    .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background-color: #ccc;
       transition: 0.4s;
       border-radius: 30px;
     }
-
     .slider:before {
       position: absolute;
       content: "";
@@ -206,68 +144,97 @@
       left: 3px;
       bottom: 3px;
       background-color: white;
-      transition: transform 0.4s ease;
+      transition: transform 0.4s;
       border-radius: 50%;
     }
-
-    input:checked + .slider:before {
-      transform: translateX(40px);
-    }
-
-    input:checked + .slider {
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-    }
-
+    input:checked + .slider:before { transform: translateX(40px); }
+    input:checked + .slider { background: linear-gradient(135deg, #2563eb, #1e40af); }
     .slider::after {
       content: attr(data-label);
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       font-size: 12px;
       font-weight: 600;
       color: white;
       pointer-events: none;
     }
+    #lockMessage { font-weight: 600; color: red; }
 
-    #lockMessage {
-      font-weight: 600;
-      color: red;
+    /* Modal Popup */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.4s;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: slideUp 0.4s;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #1e3a8a;
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .close-btn {
+      background: #dc2626;
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .close-btn:hover { background: #b91c1c; }
 
     /* Mobile View */
     @media (max-width: 600px) {
-      header h2 {
-        font-size: 18px;
-      }
-      header button {
-        position: static;
-        margin-top: 10px;
-      }
-      .top-summary {
+      header {
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
+        gap: 8px;
       }
+      header h2 { font-size: 18px; }
       .filters {
         display: flex;
         flex-direction: column;
-        align-items: stretch;
       }
       button, input, select {
         width: 100%;
       }
+      .card { width: 100%; }
     }
-
   </style>
 </head>
 <body onload="initPrincipal()">
   <header>
-    <h2><i class="fa-solid fa-user-tie"></i> Principal Dashboard – College Attendance Overview</h2>
+    <h2><i class="fa-solid fa-user-tie"></i> Principal Dashboard</h2>
     <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
   </header>
 
   <div class="container">
-    <!-- Top Summary -->
     <div class="top-summary" id="collegeTopSummary"></div>
 
     <!-- Attendance Section -->
@@ -289,7 +256,7 @@
           <button class="btn" onclick="downloadCollegeSummary()"><i class="fa-solid fa-file-arrow-down"></i> Download Summary</button>
           <button class="btn" onclick="downloadAbsentReport()"><i class="fa-solid fa-user-xmark"></i> Absent CSV</button>
           <button class="btn" onclick="downloadODReport()"><i class="fa-solid fa-id-badge"></i> OD CSV</button>
-          <button class="btn" onclick="loadAttendanceStatus()"><i class="fa-solid fa-list-check"></i> View Status</button>
+          <button class="btn" onclick="openStatusModal()"><i class="fa-solid fa-list-check"></i> View Status</button>
         </div>
       </div>
 
@@ -303,10 +270,9 @@
 
       <div id="summaryGrid"></div>
       <div id="classGrid"></div>
-      <div id="statusTableArea"></div>
     </div>
 
-    <!-- Manage HOD Section -->
+    <!-- Manage HoD Section -->
     <div class="section">
       <h3><i class="fa-solid fa-user-gear"></i> Manage HoD Users</h3>
       <div style="margin-bottom:10px;">
@@ -329,9 +295,22 @@
       </table>
     </div>
   </div>
-</body>
-</html>
 
+  <!-- Modal Popup for View Status -->
+  <div id="statusModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span><i class="fa-solid fa-list-check"></i> Attendance Status</span>
+        <button class="close-btn" onclick="closeStatusModal()">X</button>
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Batch</th><th>Status</th><th>Remarks</th></tr></thead>
+        <tbody id="statusBody">
+          <!-- dynamically loaded rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
   <!-- ===== JS Functions (SAME LOGIC, FIXED EVENTS) ===== -->
 
 
@@ -736,6 +715,7 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
 
