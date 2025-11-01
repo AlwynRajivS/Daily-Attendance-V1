@@ -14,6 +14,7 @@
       height: 100vh;
       margin: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       overflow: hidden;
@@ -37,6 +38,22 @@
       100% { transform: translate(0, 0); }
     }
 
+    /* ---------- Page Label Outside Card ---------- */
+    .page-title {
+      color: #ffffff;
+      font-size: 2em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      animation: fadeInDown 1s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* ---------- Login Card ---------- */
     .card {
       background: white;
@@ -46,18 +63,12 @@
       padding: 40px 30px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
       text-align: center;
-      animation: fadeIn 1s ease;
+      animation: fadeInUp 1s ease;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card h2 {
-      color: #1e3a8a;
-      margin-bottom: 25px;
-      font-size: 1.8em;
     }
 
     /* ---------- Input Fields ---------- */
@@ -110,11 +121,11 @@
 
     /* ---------- Mobile Responsive ---------- */
     @media (max-width: 480px) {
+      .page-title {
+        font-size: 1.6em;
+      }
       .card {
         padding: 30px 20px;
-      }
-      .card h2 {
-        font-size: 1.5em;
       }
       input {
         font-size: 0.95em;
@@ -124,9 +135,12 @@
 </head>
 <body>
   <div class="background"></div>
-  <div class="card">
-    <h2><i class="fa-solid fa-user-check"></i> Attendance Login</h2>
 
+  <div class="page-title">
+    <i class="fa-solid fa-user-check"></i> Attendance Login
+  </div>
+
+  <div class="card">
     <div class="input-box">
       <input type="email" id="email" placeholder="Enter your email" required>
       <i class="fa-solid fa-envelope"></i>
