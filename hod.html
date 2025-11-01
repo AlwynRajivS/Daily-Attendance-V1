@@ -150,6 +150,61 @@
       float: right;
       cursor: pointer;
     }
+    /* === HEADER BAR STYLE === */
+.topbar {
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.topbar .title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.topbar .title i {
+  font-size: 1.4em;
+  color: #ffffff;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* === MOBILE RESPONSIVE HEADER === */
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  .logout-btn {
+    width: 90%;
+    font-size: 1em;
+  }
+}
+
 
     /* Responsive layout */
     @media (max-width: 768px) {
@@ -166,8 +221,15 @@
 
 <body onload="initHOD()">
 
-  <h2><i class="fa-solid fa-user-tie"></i> HoD Dashboard – Department: <span id="hodDept"></span></h2>
-  <button class="btn logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+  <header class="topbar">
+  <div class="title">
+    <i class="fa-solid fa-user-tie"></i>
+    <span>HoD Dashboard – Department: <strong id="hodDept"></strong></span>
+  </div>
+  <button class="btn logout-btn" onclick="logout()">
+    <i class="fa-solid fa-right-from-bracket"></i> Logout
+  </button>
+</header>
 
   <!-- Attendance Summary -->
   <div class="section">
@@ -505,5 +567,6 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
 
