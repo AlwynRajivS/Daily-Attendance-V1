@@ -1,272 +1,344 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Principal Dashboard – College Attendance (Professional)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Principal Dashboard – College Attendance Overview</title>
+<script src="common.js"></script>
 
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+  :root {
+    --primary: #2563eb;
+    --dark-primary: #1e40af;
+    --bg: #f3f7ff;
+    --text: #1e3a8a;
+  }
 
-  <style>
-    :root{
-      --bg: #f5f8ff;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --accent1: #0f62fe;
-      --accent2: #0b57d0;
-      --danger: #ef4444;
-      --success: #16a34a;
-      --radius: 12px;
-      --shadow-lg: 0 10px 30px rgba(15,23,42,0.08);
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ===== Header ===== */
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--dark-primary));
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  header button {
+    background: white;
+    color: var(--primary);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  header button:hover {
+    background: #e0ebff;
+    transform: scale(1.05);
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  /* ===== Buttons & Inputs ===== */
+  button, input, select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, var(--primary), var(--dark-primary));
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+  }
+
+  /* ===== Summary Boxes ===== */
+  .top-summary {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .top-box {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 15px 25px;
+    text-align: center;
+    min-width: 130px;
+    transition: 0.3s;
+  }
+
+  .top-box:hover {
+    transform: scale(1.05);
+  }
+
+  /* ===== Filters ===== */
+  .filters {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== Cards ===== */
+  #summaryGrid, #classGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+
+  #classGrid h3 {
+    width: 100%;
+    text-align: center;
+    color: var(--text);
+  }
+
+  .card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 200px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.25s ease;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  /* ===== Table ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  th {
+    background: var(--dark-primary);
+    color: white;
+  }
+
+  /* ===== Lock Slider ===== */
+  .lock-toggle {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    height: 30px;
+    vertical-align: middle;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 30px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: transform 0.4s ease;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(40px);
+  }
+
+  input:checked + .slider {
+    background: linear-gradient(135deg, var(--primary), var(--dark-primary));
+  }
+
+  .slider::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+  }
+
+  /* ===== Popup ===== */
+  #popupOverlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  #popupBox {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-height: 85%;
+    overflow-y: auto;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  #popupBox h3 {
+    text-align: center;
+    color: var(--text);
+  }
+
+  #popupBox button {
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    float: right;
+    cursor: pointer;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+      text-align: center;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Segoe UI,Roboto,-apple-system,Arial;color:#0f172a;background:linear-gradient(180deg,var(--bg), #eef3ff)}
-    a{color:inherit}
-    /* App grid */
-    .app {
-      display:grid;
-      grid-template-columns: 270px 1fr;
-      gap:20px;
-      min-height:100vh;
-      padding:18px;
+
+    .top-summary {
+      flex-direction: column;
+      align-items: center;
     }
 
-    /* SIDEBAR */
-    .sidebar {
-      background: linear-gradient(180deg, rgba(15,98,255,0.06), rgba(11,81,208,0.02));
-      padding:18px;
-      border-radius:16px;
-      height: calc(100vh - 36px);
-      position: sticky;
-      top:18px;
-      box-shadow: var(--shadow-lg);
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-    .brand { display:flex; gap:12px; align-items:center }
-    .logo { width:44px; height:44px; border-radius:10px; background: linear-gradient(135deg,var(--accent1),var(--accent2)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700 }
-    .brand h1{ font-size:16px; margin:0 }
-    .brand .muted{ font-size:12px; color:var(--muted) }
-
-    .nav { margin-top:6px; display:flex; flex-direction:column; gap:6px; }
-    .nav a { display:flex; gap:12px; align-items:center; padding:10px 12px; color:var(--muted); border-radius:10px; text-decoration:none; font-weight:600; font-size:14px }
-    .nav a.active, .nav a:hover { background: linear-gradient(90deg,var(--accent1),var(--accent2)); color:white; box-shadow:0 6px 18px rgba(15,23,42,0.06) }
-
-    .sidebar .quick { margin-top:auto; display:flex; flex-direction:column; gap:8px }
-    .sidebar .small{ font-size:12px; color:var(--muted) }
-
-    /* HEADER */
-    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:18px 0 0 0 }
-    .topbar-left { display:flex; gap:12px; align-items:center }
-    .hamburger { display:none; border-radius:10px; padding:10px; cursor:pointer; background:transparent; border:1px solid rgba(15,23,42,0.04) }
-    .search { display:flex; gap:8px; align-items:center; background:var(--card); padding:8px; border-radius:10px; box-shadow:0 6px 18px rgba(15,23,42,0.03) }
-    .search input { border: none; outline:none; background:transparent; padding:6px; width:280px; font-size:14px }
-
-    .top-actions { display:flex; gap:8px; align-items:center }
-    .btn { background: linear-gradient(135deg,var(--accent1),var(--accent2)); color:white; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700; box-shadow:0 6px 18px rgba(15,23,42,0.06) }
-    .ghost { background:transparent; border:1px solid rgba(15,23,42,0.06); padding:8px 10px; border-radius:10px; cursor:pointer }
-    .icon-btn { padding:8px; border-radius:10px; background:var(--card); border:1px solid rgba(15,23,42,0.04) }
-
-    /* MAIN */
-    .main-wrap { margin:0 8px 18px 0; display:flex; flex-direction:column; gap:14px }
-    .widgets { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px }
-    .widget { background:var(--card); padding:16px; border-radius:12px; box-shadow: var(--shadow-lg); display:flex; flex-direction:column; gap:8px; min-height:88px }
-    .widget .label { color:var(--muted); font-size:13px }
-    .widget .value { font-size:20px; font-weight:800 }
-
-    /* Section card */
-    .card { background:var(--card); padding:16px; border-radius:12px; box-shadow:var(--shadow-lg) }
-
-    .dept-grid { display:flex; flex-wrap:wrap; gap:12px; margin-top:12px }
-    .dept-card { min-width:180px; background:linear-gradient(180deg,#fff,#fbfdff); padding:12px; border-radius:10px; box-shadow:0 8px 22px rgba(11,81,208,0.04); cursor:pointer }
-    .dept-card h4{ margin:0 0 6px 0; font-size:14px }
-    .dept-card p{ margin:0; font-size:13px }
-
-    table { width:100%; border-collapse:collapse; margin-top:12px; font-size:14px }
-    th,td { text-align:center; padding:10px 8px; border-bottom:1px solid #f0f4ff }
-    thead th { background: linear-gradient(135deg,var(--accent1),var(--accent2)); color:white; font-weight:700 }
-
-    /* modal */
-    .overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(10,11,13,0.45); z-index:9999 }
-    .modal { width:92%; max-width:840px; background:var(--card); padding:18px; border-radius:12px; box-shadow:0 16px 50px rgba(15,23,42,0.2) }
-
-    /* loader & toast */
-    .loader-overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(255,255,255,0.6); z-index:10000 }
-    .spinner { width:54px; height:54px; border-radius:50%; border:6px solid rgba(15,23,42,0.08); border-top-color:var(--accent1); animation:spin 1s linear infinite }
-    @keyframes spin{ to{ transform:rotate(360deg) } }
-
-    .toast-wrap { position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:10px; z-index:11000 }
-
-    .toast { background:var(--card); padding:10px 14px; border-radius:10px; box-shadow:0 8px 30px rgba(10,11,13,0.08); display:flex; gap:10px; align-items:center; min-width:240px; border-left:6px solid var(--accent1) }
-    .toast.error { border-left-color: var(--danger) }
-    .toast.success { border-left-color: var(--success) }
-    .toast .text { font-size:14px; color:#0f172a }
-
-    /* responsive */
-    @media (max-width:1000px){
-      .widgets { grid-template-columns:repeat(2,1fr) }
-      .search input { width:160px }
-    }
-    @media (max-width:720px){
-      .app { grid-template-columns: 1fr; padding:12px }
-      .sidebar { position:relative; height:auto; display:flex; flex-direction:row; overflow:auto; gap:12px; padding:10px }
-      .nav { display:none } /* hide nav on small devices, we keep key actions in header */
-      .hamburger { display:inline-flex }
-      .topbar-left { gap:8px }
-      .widgets { grid-template-columns:1fr }
-      .search input { width:100px }
+    .card {
+      width: 90%;
     }
 
-  </style>
+    table {
+      font-size: 12px;
+    }
+  }
+</style>
 </head>
+
 <body onload="initPrincipal()">
+  <header>
+    <h2>Principal Dashboard – Attendance Overview</h2>
+    <button onclick="logout()">Logout</button>
+  </header>
 
-  <!-- SCRIPT_URL: replace with your backend endpoint -->
-  <script>
-    const SCRIPT_URL = "/your/script/url"; // <-- set your server endpoint here
-  </script>
+  <main>
+    <div class="top-summary" id="collegeTopSummary"></div>
 
-  <div class="app">
+    <section class="section">
+      <h3 style="text-align:center; color:var(--text);">College-Wide Attendance Summary</h3>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="logo">PI</div>
-        <div>
-          <h1>Principal Panel</h1>
-          <div class="muted">College Attendance</div>
-        </div>
-      </div>
-
-      <nav class="nav" id="navMenu">
-        <a href="#" class="active" onclick="scrollToTop(event)"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
-        <a href="#" onclick="document.getElementById('classGrid').scrollIntoView();"><i class="fa fa-chalkboard"></i> Class Summary</a>
-        <a href="#" onclick="document.getElementById('hodTable').scrollIntoView();"><i class="fa fa-users"></i> Manage HoDs</a>
-        <a href="#" onclick="loadAttendanceStatus();"><i class="fa fa-clipboard-list"></i> View Status</a>
-      </nav>
-
-      <div class="quick">
-        <div class="small">Quick actions</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="downloadCollegeSummary()"><i class="fa fa-file-csv"></i> Export</button>
-          <button class="ghost" onclick="downloadAbsentReport()" title="Absent CSV"><i class="fa fa-user-times"></i></button>
-        </div>
-        <div style="margin-top:8px; font-size:12px; color:var(--muted)">Signed in as <strong id="currentEmail">--</strong></div>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <div class="main-wrap">
-
-      <!-- TOPBAR -->
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <div style="display:flex; gap:10px; align-items:center;">
-          <button class="hamburger" onclick="toggleSidebar()" title="Toggle sidebar"><i class="fa fa-bars"></i></button>
-          <div class="search">
-            <i class="fa fa-search" style="color:var(--muted)"></i>
-            <input id="globalSearch" placeholder="Search student / department..." oninput="/* search hook if needed */">
-          </div>
-        </div>
-
-        <div class="top-actions">
-          <label for="date" style="font-weight:600; font-size:13px; color:var(--muted)">Date</label>
-          <input id="date" type="date" onchange="updateLockToggleButton()" />
-          <select id="batch" onchange="updateLockToggleButton()">
+      <div class="filters">
+        <label>Date: <input type="date" id="date"></label>
+        <label>Batch:
+          <select id="batch">
             <option value="FN">FN</option>
             <option value="AN">AN</option>
           </select>
-
-          <button class="btn" onclick="loadCollegeSummary()"><i class="fa fa-sync"></i> Load</button>
-          <button class="btn" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</button>
-        </div>
+        </label>
+        <button class="btn" onclick="loadCollegeSummary()">Load Summary</button>
+        <button class="btn" onclick="downloadCollegeSummary()">Download Summary</button>
+        <button class="btn" onclick="downloadAbsentReport()">Download Absent CSV</button>
+        <button class="btn" onclick="downloadODReport()">Download OD CSV</button>
+        <button class="btn" onclick="loadAttendanceStatus()">View Status</button>
       </div>
 
-      <!-- WIDGETS -->
-      <div class="widgets">
-        <div class="widget">
-          <div class="label">Total Students</div>
-          <div class="value" id="totalStudents">0</div>
-          <div class="muted">Across all departments</div>
-        </div>
-
-        <div class="widget">
-          <div class="label">Present</div>
-          <div class="value" id="presentStudents">0</div>
-          <div class="muted">Marked present</div>
-        </div>
-
-        <div class="widget">
-          <div class="label">Absent</div>
-          <div class="value" id="absentStudents">0</div>
-          <div class="muted">Marked absent</div>
-        </div>
-
-        <div class="widget">
-          <div class="label">Attendance %</div>
-          <div class="value" id="attendancePercent">0%</div>
-          <div class="muted">College average</div>
-        </div>
+      <div class="lock-toggle">
+        <label class="switch">
+          <input type="checkbox" id="lockToggleBtn" onchange="updateSliderLabel(this)">
+          <span class="slider" data-label="Unlock"></span>
+        </label>
+        <span id="lockMessage" style="color:red; font-weight:600; margin-left:10px;"></span>
       </div>
 
-      <!-- COLLEGE-WIDE SECTION -->
-      <section class="card">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <h3 style="margin:0; color:var(--accent2)">College-Wide Attendance Summary</h3>
-          <div style="display:flex; gap:8px;">
-            <button class="btn" onclick="downloadCollegeSummary()"><i class="fa fa-download"></i> Classwise CSV</button>
-            <button class="btn" onclick="downloadAbsentReport()"><i class="fa fa-user-times"></i> Absent CSV</button>
-            <button class="btn" onclick="downloadODReport()"><i class="fa fa-file"></i> OD CSV</button>
-            <button class="btn" onclick="loadAttendanceStatus()"><i class="fa fa-clipboard-list"></i> View Status</button>
-          </div>
-        </div>
+      <div id="summaryGrid"></div>
+      <div id="classGrid"></div>
+      <div id="statusTableArea"></div>
+    </section>
 
-        <div id="summaryGrid" class="dept-grid"></div>
+    <section class="section">
+      <h3 style="text-align:center; color:var(--text);">Manage HoD Users</h3>
+      <div style="text-align:center; margin-bottom:10px;">
+        <button class="btn" onclick="downloadHoDTemplate()">Download Template</button>
+        <input type="file" id="hodFile" class="file-input" accept=".csv">
+        <button class="btn" onclick="uploadHoDUsers()">Upload HoDs</button>
+      </div>
+      <table id="hodTable">
+        <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Department</th><th>Action</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
 
-        <div id="classGrid" style="margin-top:14px"></div>
 
-        <div id="statusTableArea"></div>
-      </section>
 
-      <!-- HOD MANAGEMENT -->
-      <section class="card" id="hodSection">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <h3 style="margin:0; color:var(--accent2)">Manage HoD Users</h3>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button class="btn" onclick="downloadHoDTemplate()"><i class="fa fa-file-csv"></i> Template</button>
-            <input type="file" id="hodFile" accept=".csv" />
-            <button class="btn" onclick="uploadHoDUsers()">Upload HoDs</button>
-          </div>
-        </div>
-
-        <div style="overflow:auto; margin-top:12px;">
-          <table id="hodTable">
-            <thead>
-              <tr><th>Email</th><th>Name</th><th>Role</th><th>Department</th><th>Action</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-    </div> <!-- main-wrap -->
-
-  </div> <!-- app -->
-
-  <!-- Loader overlay & Toast container -->
-  <div class="loader-overlay" id="loaderOverlay">
-    <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
-      <div class="spinner"></div>
-      <div class="muted">Connecting to server...</div>
-    </div>
-  </div>
-
-  <div class="toast-wrap" id="toastWrap"></div>
-
-  <!-- Small reusable pieces: modal container -->
-  <div id="modalRoot"></div>
 
   <script>
     /* ------------------------------
@@ -696,3 +768,4 @@
   </script>
 </body>
 </html>
+
