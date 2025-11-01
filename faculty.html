@@ -1,546 +1,370 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Faculty Dashboard - Absentees & OD</title>
-<script src="common.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #f5f8ff, #eef3ff);
-    margin: 0; padding: 0;
-  }
-  header {
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
-    color: white;
-    padding: 15px 10px;
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  }
-
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    flex-wrap: wrap;
-  }
-  .top-bar button {
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-
-  .filters {
-    text-align: center;
-    padding: 15px;
-  }
-  input, select {
-    padding: 8px;
-    margin: 5px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-  }
-  .btn {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.2s;
-  }
-  .btn:hover { transform: scale(1.05); }
-
-  table {
-    width: 95%;
-    margin: 15px auto;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  th, td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #e5e7eb;
-  }
-  th {
-    background: #1e3a8a;
-    color: white;
-    font-size: 15px;
-  }
-  tr:hover { background: #f1f5ff; }
-
-  button.save {
-    display: block;
-    margin: 20px auto;
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.3s;
-  }
-  button.save:hover { background: #1d4ed8; transform: scale(1.05); }
-
-  #summary {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-  }
-  .summary-card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    width: 180px;
-    text-align: center;
-  }
-
-  /* Modals */
-  .modal {
-    display:none;
-    position:fixed;
-    z-index:10;
-    left:0; top:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.4);
-    justify-content:center;
-    align-items:center;
-  }
-  .modal-content {
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    width:90%;
-    max-width:420px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.3);
-    animation: fadeIn 0.3s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  .close-btn {
-    background:red;
-    color:white;
-    border:none;
-    border-radius:5px;
-    padding:5px 10px;
-    float:right;
-    cursor:pointer;
-  }
-
-  /* Mobile Responsive */
-@media (max-width: 768px) {
-
-  /* Apply mobile card view ONLY to main attendance table */
-  #dataTable, 
-  #dataTable thead, 
-  #dataTable tbody, 
-  #dataTable th, 
-  #dataTable td, 
-  #dataTable tr {
-    display: block;
-  }
-
-  #dataTable thead tr { display: none; }
-
-  #dataTable td {
-    position: relative;
-    padding-left: 50%;
-    text-align: left;
-  }
-
-  #dataTable td:before {
-    position: absolute;
-    left: 10px;
-    width: 45%;
-    font-weight: 600;
-    color: #1e3a8a;
-    white-space: nowrap;
-  }
-
-  #dataTable td:nth-of-type(1):before { content: "Roll No"; }
-  #dataTable td:nth-of-type(2):before { content: "Name"; }
-  #dataTable td:nth-of-type(3):before { content: "Year"; }
-  #dataTable td:nth-of-type(4):before { content: "Section"; }
-  #dataTable td:nth-of-type(5):before { content: "Status"; }
-  #dataTable td:nth-of-type(6):before { content: "Reason"; }
-  #dataTable td:nth-of-type(7):before { content: "Action"; }
-
-  /* Keep table header for all other tables (like history) */
-  th {
-    background: #1e3a8a;
-    color: white;
-    font-size: 15px;
-  }
-
-  tr:hover { background: #f1f5ff; }
-
-  /* Make history modal table scrollable */
-  #historyModal table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  #historyModal .modal-content {
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-}
-
-</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Dashboard - Absentees & OD</title>
+  <script src="common.js"></script>
+  
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f8ff;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 { color: #1e3a8a; text-align: center; }
+    .filters { text-align: center; margin-bottom: 20px; }
+    input, select, button {
+      padding: 8px; margin: 5px; border-radius: 6px; border: 1px solid #ccc;
+    }
+    .btn {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white; padding: 6px 10px; border: none;
+      border-radius: 6px; cursor: pointer; font-weight: 600;
+      transition: 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); }
+    table {
+      width: 100%; border-collapse: collapse; background: white;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px; border-bottom: 1px solid #ddd; text-align: center;
+    }
+    th { background: #1e3a8a; color: white; }
+    tr:hover { background: #eef3ff; }
+    button.save {
+      background: #2563eb; color: white; border: none;
+      padding: 10px 16px; border-radius: 6px; cursor: pointer;
+      display: block; margin: 20px auto;
+    }
+    /* Modal styles */
+    .modal {
+      display:none; position:fixed; z-index:10; left:0; top:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.5); justify-content:center; align-items:center;
+    }
+    .modal-content {
+      background:white; padding:20px; border-radius:10px; width:400px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.3);
+    }
+    .close-btn {
+      background:red; color:white; border:none; border-radius:5px; padding:5px 10px;
+      float:right; cursor:pointer;
+    }
+    .summary-box {
+      text-align:center; margin-top:10px; font-weight:600;
+    }
+  </style>
 </head>
 
 <body onload="initFaculty()">
+  <h2>Faculty Dashboard – Absentees & OD</h2>
+  <div id="welcome" style="text-align:center; margin-bottom: 15px; font-weight:600;"></div>
 
-<header>📘 Faculty Dashboard – Absentees & OD</header>
-
-<div class="top-bar">
-  <div id="welcome" style="font-weight:600; color:#1e3a8a;">👨‍🏫 Loading...</div>
-  <button onclick="logout()">Logout</button>
-</div>
-
-<div class="filters">
-  <label>Date: <input type="date" id="date"></label>
-  <label>Batch:
-    <select id="batch">
-      <option value="FN">FN</option>
-      <option value="AN">AN</option>
-    </select>
-  </label>
-  <button class="btn" onclick="loadAbsentees()">Load</button>
-</div>
-
-<div id="facultySectionInfo" 
-  style="text-align:center; font-weight:600; color:#2563eb; margin-bottom:10px;">
-</div>
-
-<table id="dataTable">
-  <thead>
-    <tr>
-      <th>Roll No</th>
-      <th>Name</th>
-      <th>Year</th>
-      <th>Section</th>
-      <th>Status</th>
-      <th>Reason</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<button class="save" onclick="saveUpdates()">💾 Save Changes</button>
-
-<h3 style="text-align:center; color:#1e3a8a;">📊 Class Attendance Summary</h3>
-<div id="summary"></div>
-
-<!-- History Modal -->
-<!-- History Modal -->
-<div id="historyModal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeHistory()">X</button>
-    <h3 id="historyTitle"></h3>
-
-    <!-- Scrollable table container -->
-    <div style="max-height:300px; overflow-y:auto; overflow-x:auto; border:1px solid #ddd; border-radius:8px;">
-      <table style="width:100%; border-collapse:collapse; min-width:400px;">
-        <thead style="background:#1e3a8a; color:white; position:sticky; top:0; z-index:2;">
-          <tr>
-            <th style="padding:8px;">Date</th>
-            <th style="padding:8px;">Batch</th>
-            <th style="padding:8px;">Status</th>
-            <th style="padding:8px;">Reason</th>
-          </tr>
-        </thead>
-        <tbody id="historyBody" style="background:white;"></tbody>
-      </table>
-    </div>
-
-    <div id="historySummary" style="text-align:center; margin-top:10px; font-weight:600;"></div>
+  <div class="filters">
+    <label>Date: <input type="date" id="date"></label>
+    <label>Batch:
+      <select id="batch">
+        <option value="FN">FN</option>
+        <option value="AN">AN</option>
+      </select>
+    </label>
+    <button class="btn" onclick="loadAbsentees()">Load</button>
+    <button class="btn" onclick="logout()">Logout</button>
   </div>
+
+  <div id="facultySectionInfo" 
+     style="text-align:center; font-weight:600; color:#2563eb; margin-bottom:15px;">
 </div>
 
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Roll No</th>
+        <th>Name</th>
+        <th>Year</th>
+        <th>Section</th>
+        <th>Status</th>
+        <th>Reason</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<!-- Call Modal -->
+  <button class="save" onclick="saveUpdates()">Save Changes</button>
+  <h3 style="text-align:center; color:#1e3a8a;">Class Attendance Summary</h3>
+  <div id="summary" style="text-align:center; margin-bottom:20px;"></div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeHistory()">X</button>
+      <h3 id="historyTitle"></h3>
+      <table style="width:100%; border-collapse:collapse;">
+        <thead><tr><th>Date</th><th>Batch</th><th>Status</th><th>Reason</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+      <div id="historySummary" class="summary-box"></div>
+    </div>
+  </div>
+
+  <!-- Call Modal -->
 <div id="callModal" class="modal">
   <div class="modal-content">
     <button class="close-btn" onclick="closeCall()">X</button>
-    <h3>📞 Parent Contact Info</h3>
+    <h3>Parent Contact Info</h3>
     <div id="callInfo" style="text-align:center; font-size:16px; margin-top:10px;"></div>
   </div>
 </div>
 
-<script>
-   /* ----------------------
-      Logic (from second code)
-      Kept behavior & improvements:
-      - lock check with lockedBy
-      - loads absentees and fullClass (window._facultyClassList)
-      - renders summary using full class list to compute % accurately
-      - mobile responsive view preserved by CSS (from first file)
-      - history & call modals
-      ---------------------- */
+  <script>
+    let absentees = [];
+    let user;
 
-  let absentees = [];
-  let user;
+    function initFaculty() {
+  user = requireRole("faculty"); // lowercase
+  if (!user) return;
 
-  function initFaculty() {
-    user = requireRole("faculty"); // expects common.js to provide this
-    if (!user) return;
+  // Save email
+  localStorage.setItem("facultyEmail", user.email);
 
-    // Save email
-    localStorage.setItem("facultyEmail", user.email);
+  document.getElementById("welcome").innerText =
+    `Signed in as: ${user.name} (${user.email})`;
+}
 
-    document.getElementById("welcome").innerText =
-      `👨‍🏫 Signed in as: ${user.name} (${user.email})`;
+    async function loadAbsentees() {
+  const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
+  const facultyEmail = localStorage.getItem("facultyEmail");
+
+  if (!date || !batch) return alert("Please select both date and batch.");
+  if (!facultyEmail) return alert("Faculty email not found. Please log in again.");
+
+  // --- Check lock status ---
+  let isLocked = false;
+  let lockedBy = "";
+  try {
+    const lockCheck = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "checkLockStatus", date, batch })
+    });
+    const lockData = await lockCheck.json();
+    if (lockData.locked) {
+      isLocked = true;
+      lockedBy = `${lockData.role || 'Unknown Role'} (${lockData.lockedBy || 'Unknown'})`;
+      alert(`Attendance is locked for this date & batch.\nLocked by admin.\nYou can only view data.`);
+    }
+  } catch (err) {
+    console.error("Lock check failed:", err);
   }
 
-  async function loadAbsentees() {
-    const date = document.getElementById("date").value;
-    const batch = document.getElementById("batch").value;
-    const facultyEmail = localStorage.getItem("facultyEmail");
+  // --- Fetch data anyway (for view mode) ---
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "getAbsenteesForFaculty",
+      email: facultyEmail,
+      date,
+      batch
+    })
+  });
 
-    if (!date || !batch) return alert("Please select both date and batch.");
-    if (!facultyEmail) return alert("Faculty email not found. Please log in again.");
+  const data = await res.json();
+  if (!data.success) return alert(data.message);
 
-    // --- Check lock status ---
-    let isLocked = false;
-    let lockedBy = "";
-    try {
-      const lockCheck = await fetch(SCRIPT_URL, {
+  absentees = data.records || data.data || [];
+  window._facultyClassList = data.fullClass || [];
+
+  renderTable(isLocked);
+  renderSummary();
+
+  // --- Display section info ---
+  document.getElementById("facultySectionInfo").innerText =
+    `Loaded: ${data.department || user.department} - ${data.year || user.year} ${data.section || user.section}`;
+
+  // --- Disable or enable save button based on lock ---
+  const saveBtn = document.querySelector(".save");
+  saveBtn.disabled = isLocked;
+  saveBtn.style.opacity = isLocked ? "0.6" : "1.0";
+}
+
+
+    function renderSummary() {
+  const summaryDiv = document.getElementById("summary");
+  const classList = window._facultyClassList || [];
+  if (!classList.length) {
+    summaryDiv.innerHTML = "No class data available.";
+    return;
+  }
+
+  // Build totals
+  const classMap = {};
+  classList.forEach(s => {
+    const key = `${s.Year} ${s.Section}`;
+    if (!classMap[key]) classMap[key] = { total: 0, absent: 0 };
+    classMap[key].total++;
+  });
+
+  absentees.forEach(s => {
+    const key = `${s.Year} ${s.Section}`;
+    if (classMap[key]) classMap[key].absent++;
+  });
+
+  // Build summary grid
+  let html = '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">';
+  for (const key in classMap) {
+    const [year, section] = key.split(" ");
+    const c = classMap[key];
+    const present = c.total - c.absent;
+    const percent = ((present / c.total) * 100).toFixed(2);
+    html += `
+      <div style="background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); width:180px; text-align:center;">
+        <h4 style="margin:0 0 8px 0; color:#1e3a8a;">${year} ${section}</h4>
+        <p><strong>Total:</strong> ${c.total}</p>
+        <p style="color:green;"><strong>Present:</strong> ${present}</p>
+        <p style="color:red;"><strong>Absent/OD:</strong> ${c.absent}</p>
+        <p><strong>Attendance %:</strong> ${percent}%</p>
+      </div>`;
+  }
+  html += "</div>";
+  summaryDiv.innerHTML = html;
+}
+
+
+
+    function renderTable(isLocked = false) {
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+
+  absentees.forEach((s, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${s.RollNo}</td>
+        <td>${s.Name}</td>
+        <td>${s.Year}</td>
+        <td>${s.Section}</td>
+        <td>
+          ${
+            isLocked
+              ? `<span>${s.Status}</span>`
+              : `<select onchange="absentees[${i}].Status=this.value">
+                   <option ${s.Status==='Absent'?'selected':''}>Absent</option>
+                   <option ${s.Status==='OD'?'selected':''}>OD</option>
+                 </select>`
+          }
+        </td>
+        <td>
+          ${
+            isLocked
+              ? `<span>${s.Reason || '-'}</span>`
+              : `<input type="text" value="${s.Reason||''}" onchange="absentees[${i}].Reason=this.value" style="width:120px;">`
+          }
+        </td>
+        <td>
+          <button class="btn" onclick="viewHistory('${s.RollNo}','${s.Name}')">History</button>
+          <button class="btn" onclick="callParent('${s.ParentPhone||''}', ${i})">Call</button>
+          ${
+            !isLocked
+              ? `<button class="btn" onclick="editParent(${i})">Edit</button>`
+              : ''
+          }
+        </td>
+      </tr>`;
+  });
+}
+
+
+    function editParent(index) {
+      const s = absentees[index];
+      //const newName = prompt("Edit Parent Name:", s.ParentName || "");
+      const newPhone = prompt("Edit Parent Phone:", s.ParentPhone || "");
+      //if (newName !== null) absentees[index].ParentName = newName;
+      if (newPhone !== null) absentees[index].ParentPhone = newPhone;
+      alert("Parent info updated locally. Click 'Save Changes' to store.");
+    }
+
+    async function viewHistory(rollNo, name) {
+      const res = await fetch(SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "checkLockStatus", date, batch })
+        body: JSON.stringify({ action: "getStudentHistory", rollNo })
       });
-      const lockData = await lockCheck.json();
-      if (lockData.locked) {
-        isLocked = true;
-        lockedBy = `${lockData.role || 'Unknown Role'} (${lockData.lockedBy || 'Unknown'})`;
-        alert(`Attendance is locked for this date & batch.\nLocked by admin.\nYou can only view data.`);
-      }
-    } catch (err) {
-      console.error("Lock check failed:", err);
+      const data = await res.json();
+      if (!data.success) return alert(data.message);
+
+      const records = data.records;
+      const body = document.getElementById("historyBody");
+      const title = document.getElementById("historyTitle");
+      const summary = document.getElementById("historySummary");
+      body.innerHTML = "";
+      title.innerText = `History of ${name} (${rollNo})`;
+
+      let absentCount = 0, odCount = 0;
+      records.forEach(r => {
+        if (r.Status === "Absent") absentCount++;
+        if (r.Status === "OD") odCount++;
+        body.innerHTML += `<tr>
+          <td>${r.Date}</td><td>${r.Batch}</td>
+          <td>${r.Status}</td><td>${r.Reason || ''}</td></tr>`;
+      });
+      summary.innerHTML = `Total: ${records.length} | Absent: ${absentCount} | OD: ${odCount}`;
+
+      document.getElementById("historyModal").style.display = "flex";
     }
 
-    // --- Fetch data anyway (for view mode) ---
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "getAbsenteesForFaculty",
-        email: facultyEmail,
-        date,
-        batch
-      })
-    });
-
-    const data = await res.json();
-    if (!data.success) return alert(data.message);
-
-    absentees = data.records || data.data || [];
-    window._facultyClassList = data.fullClass || [];
-
-    renderTable(isLocked);
-    renderSummary();
-
-    // --- Display section info ---
-    document.getElementById("facultySectionInfo").innerText =
-      `Loaded: ${data.department || user.department} - ${data.year || user.year} ${data.section || user.section}`;
-
-    // --- Disable or enable save button based on lock ---
-    const saveBtn = document.querySelector(".save");
-    saveBtn.disabled = isLocked;
-    saveBtn.style.opacity = isLocked ? "0.6" : "1.0";
-  }
-
-  function renderSummary() {
-    const summaryDiv = document.getElementById("summary");
-    const classList = window._facultyClassList || [];
-    if (!classList.length) {
-      summaryDiv.innerHTML = "No class data available.";
-      return;
+    function closeHistory() {
+      document.getElementById("historyModal").style.display = "none";
     }
 
-    // Build totals
-    const classMap = {};
-    classList.forEach(s => {
-      const key = `${s.Year} ${s.Section}`;
-      if (!classMap[key]) classMap[key] = { total: 0, absent: 0 };
-      classMap[key].total++;
-    });
+    function callParent(phoneNumber, index) {
+  const s = absentees[index];
+  if (!s.ParentPhone && !phoneNumber)
+    return alert("Parent phone number not available!");
 
-    absentees.forEach(s => {
-      const key = `${s.Year} ${s.Section}`;
-      if (classMap[key]) classMap[key].absent++;
-    });
+  const parentName = s.ParentName || "Not provided";
+  const parentPhone = s.ParentPhone || phoneNumber || "Not provided";
 
-    // Build summary grid
-    let html = '<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">';
-    for (const key in classMap) {
-      const [year, section] = key.split(" ");
-      const c = classMap[key];
-      const present = c.total - c.absent;
-      const percent = ((present / c.total) * 100).toFixed(2);
-      html += `
-        <div style="background:white; padding:15px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1); width:180px; text-align:center;">
-          <h4 style="margin:0 0 8px 0; color:#1e3a8a;">${year} ${section}</h4>
-          <p><strong>Total:</strong> ${c.total}</p>
-          <p style="color:green;"><strong>Present:</strong> ${present}</p>
-          <p style="color:red;"><strong>Absent/OD:</strong> ${c.absent}</p>
-          <p><strong>Attendance %:</strong> ${percent}%</p>
-        </div>`;
-    }
-    html += "</div>";
-    summaryDiv.innerHTML = html;
-  }
+  const infoDiv = document.getElementById("callInfo");
+  infoDiv.innerHTML = `
+    <p><strong>Parent Name:</strong> ${parentName}</p>
+    <p><strong>Phone Number:</strong> ${parentPhone}</p>
+    <button onclick="makeCall('${parentPhone}')" 
+      style="background:#2563eb; color:white; border:none; padding:8px 14px;
+             border-radius:6px; margin-top:10px; cursor:pointer; font-weight:600;">
+      Call Parent
+    </button>
+  `;
 
-  function renderTable(isLocked = false) {
-    const tbody = document.querySelector("#dataTable tbody");
-    tbody.innerHTML = "";
+  document.getElementById("callModal").style.display = "flex";
+}
 
-    absentees.forEach((s, i) => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${s.RollNo}</td>
-          <td>${s.Name}</td>
-          <td>${s.Year}</td>
-          <td>${s.Section}</td>
-          <td>
-            ${
-              isLocked
-                ? `<span>${s.Status}</span>`
-                : `<select onchange="absentees[${i}].Status=this.value">
-                     <option ${s.Status==='Absent'?'selected':''}>Absent</option>
-                     <option ${s.Status==='OD'?'selected':''}>OD</option>
-                   </select>`
-            }
-          </td>
-          <td>
-            ${
-              isLocked
-                ? `<span>${s.Reason || '-'}</span>`
-                : `<input type="text" value="${s.Reason||''}" onchange="absentees[${i}].Reason=this.value" style="width:120px;">`
-            }
-          </td>
-          <td>
-            <button class="btn" onclick="viewHistory('${s.RollNo}','${s.Name}')">History</button>
-            <button class="btn" onclick="callParent('${s.ParentPhone||''}', ${i})">Call</button>
-            ${
-              !isLocked
-                ? `<button class="btn" onclick="editParent(${i})">Edit</button>`
-                : ''
-            }
-          </td>
-        </tr>`;
-    });
-  }
+function makeCall(number) {
+  if (!number || number === "Not provided")
+    return alert("Phone number not available!");
+  window.open(`tel:${number}`);
+}
 
-  function editParent(index) {
-    const s = absentees[index];
-    //const newName = prompt("Edit Parent Name:", s.ParentName || "");
-    const newPhone = prompt("Edit Parent Phone:", s.ParentPhone || "");
-    //if (newName !== null) absentees[index].ParentName = newName;
-    if (newPhone !== null) absentees[index].ParentPhone = newPhone;
-    alert("Parent info updated locally. Click 'Save Changes' to store.");
-  }
+function closeCall() {
+  document.getElementById("callModal").style.display = "none";
+}
 
-  async function viewHistory(rollNo, name) {
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "getStudentHistory", rollNo })
-    });
-    const data = await res.json();
-    if (!data.success) return alert(data.message);
+    async function saveUpdates() {
+  const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
+  if (!date) return alert("Select a date first!");
 
-    const records = data.records;
-    const body = document.getElementById("historyBody");
-    const title = document.getElementById("historyTitle");
-    const summary = document.getElementById("historySummary");
-    body.innerHTML = "";
-    title.innerText = `📜 History of ${name} (${rollNo})`;
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "saveFacultyUpdates",
+      date, batch, updates: absentees
+    }),
+  });
+  const result = await res.json();
+  alert(result.message);
+  if (result.success) await loadAbsentees(); // refresh local data from sheet
+}
 
-    let absentCount = 0, odCount = 0;
-    records.forEach(r => {
-      if (r.Status === "Absent") absentCount++;
-      if (r.Status === "OD") odCount++;
-      body.innerHTML += `<tr>
-        <td>${r.Date}</td><td>${r.Batch}</td>
-        <td>${r.Status}</td><td>${r.Reason || ''}</td></tr>`;
-    });
-    summary.innerHTML = `Total: ${records.length} | Absent: ${absentCount} | OD: ${odCount}`;
-
-    document.getElementById("historyModal").style.display = "flex";
-  }
-
-  function closeHistory() {
-    document.getElementById("historyModal").style.display = "none";
-  }
-
-  function callParent(phoneNumber, index) {
-    const s = absentees[index];
-    if (!s.ParentPhone && !phoneNumber)
-      return alert("Parent phone number not available!");
-
-    const parentName = s.ParentName || "Not provided";
-    const parentPhone = s.ParentPhone || phoneNumber || "Not provided";
-
-    const infoDiv = document.getElementById("callInfo");
-    infoDiv.innerHTML = `
-      <p><strong>Parent Name:</strong> ${parentName}</p>
-      <p><strong>Phone Number:</strong> ${parentPhone}</p>
-      <button onclick="makeCall('${parentPhone}')" 
-        style="background:#2563eb; color:white; border:none; padding:8px 14px;
-               border-radius:6px; margin-top:10px; cursor:pointer; font-weight:600;">
-        Call Parent
-      </button>
-    `;
-
-    document.getElementById("callModal").style.display = "flex";
-  }
-
-  function makeCall(number) {
-    if (!number || number === "Not provided")
-      return alert("Phone number not available!");
-    window.open(`tel:${number}`);
-  }
-
-  function closeCall() {
-    document.getElementById("callModal").style.display = "none";
-  }
-
-  async function saveUpdates() {
-    const date = document.getElementById("date").value;
-    const batch = document.getElementById("batch").value;
-    if (!date) return alert("Select a date first!");
-
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "saveFacultyUpdates",
-        date, batch, updates: absentees
-      }),
-    });
-    const result = await res.json();
-    alert(result.message);
-    if (result.success) await loadAbsentees(); // refresh local data from sheet
-  }
-
-</script>
+  </script>
 </body>
 </html>
