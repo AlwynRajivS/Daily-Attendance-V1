@@ -1,146 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Principal Dashboard – College Attendance Overview</title>
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="common.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    :root {
-      --primary: #2563eb;
-      --primary-dark: #1e40af;
-      --bg: #f0f4ff;
-      --text-dark: #1e3a8a;
-      --danger: #dc3545;
-      --success: #28a745;
-    }
-
+    /* General Styling */
     body {
-      font-family: "Poppins", sans-serif;
-      background: var(--bg);
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f7ff;
       margin: 0;
       padding: 0;
     }
 
     header {
-      position: sticky;
-      top: 0;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      text-align: center;
+      padding: 15px 10px;
+      position: relative;
     }
 
     header h2 {
       margin: 0;
-      font-size: 1.2rem;
+      font-size: 20px;
     }
 
-    .btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #fff;
+    header button {
+      position: absolute;
+      right: 15px;
+      top: 12px;
+      background: white;
+      color: #1e3a8a;
       border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.25s ease;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    }
-    .btn-danger {
-      background: var(--danger);
-    }
-    .btn-danger:hover {
-      background: #b22a38;
+      font-weight: 600;
+      transition: 0.3s;
     }
 
-    main {
-      padding: 15px;
-      max-width: 1200px;
-      margin: auto;
+    header button:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    .container {
+      padding: 20px;
     }
 
     h3 {
-      color: var(--text-dark);
-      margin-top: 25px;
-      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
     }
 
-    /* === Filter section === */
-    .filters {
-      text-align: center;
-      margin-top: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      align-items: center;
+    .section {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
     }
-    .filters label {
-      font-weight: 600;
-      color: var(--text-dark);
-      min-width: 60px;
-      text-align: right;
-    }
-    .filters input,
-    .filters select {
-      padding: 6px 10px;
+
+    /* Buttons and Inputs */
+    button, input, select {
+      padding: 8px 12px;
+      margin: 5px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      font-size: 0.9rem;
+      font-size: 14px;
     }
 
-    /* === Grid Cards === */
-    #summaryGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .card {
-      color: #1e293b;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: all 0.3s ease;
+    .btn {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      border: none;
       cursor: pointer;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      transition: 0.3s;
     }
 
-    /* === Lock Slider === */
-    .lock-toggle {
-      text-align: center;
-      margin-top: 25px;
+    .btn i {
+      margin-right: 6px;
     }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Summary Cards */
+    .top-summary {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .top-box {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 15px 25px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+
+    /* Grids */
+    #summaryGrid, #classGrid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    #classGrid h3 {
+      width: 100%;
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 180px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    /* Lock Slider */
+    .lock-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 15px 0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
     .switch {
       position: relative;
       display: inline-block;
       width: 70px;
-      height: 34px;
+      height: 30px;
+      vertical-align: middle;
     }
+
     .switch input {
       opacity: 0;
       width: 0;
       height: 0;
     }
+
     .slider {
       position: absolute;
       cursor: pointer;
@@ -150,168 +195,142 @@
       bottom: 0;
       background-color: #ccc;
       transition: 0.4s;
-      border-radius: 34px;
+      border-radius: 30px;
     }
+
     .slider:before {
       position: absolute;
       content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
       background-color: white;
-      transition: 0.4s;
+      transition: transform 0.4s ease;
       border-radius: 50%;
     }
-    input:checked + .slider {
-      background-color: var(--success);
-    }
+
     input:checked + .slider:before {
-      transform: translateX(36px);
+      transform: translateX(40px);
     }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+    }
+
     .slider::after {
       content: attr(data-label);
       position: absolute;
-      right: -85px;
       top: 50%;
-      transform: translateY(-50%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
       font-weight: 600;
-      color: var(--text-dark);
-    }
-    #lockMessage {
-      color: red;
-      font-weight: 600;
-      margin-top: 8px;
-      display: block;
-    }
-
-    /* === Table Styling === */
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 700px;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-    th {
-      background: var(--primary);
       color: white;
-    }
-    tr:hover {
-      background: #f2f6fc;
+      pointer-events: none;
     }
 
-    /* === Responsive Enhancements === */
-    @media (max-width: 768px) {
+    #lockMessage {
+      font-weight: 600;
+      color: red;
+    }
+
+    /* Mobile View */
+    @media (max-width: 600px) {
+      header h2 {
+        font-size: 18px;
+      }
+      header button {
+        position: static;
+        margin-top: 10px;
+      }
+      .top-summary {
+        flex-direction: column;
+        align-items: center;
+      }
       .filters {
+        display: flex;
         flex-direction: column;
         align-items: stretch;
       }
-      .filters label {
-        text-align: left;
-        min-width: auto;
-      }
-      #summaryGrid {
-        grid-template-columns: 1fr;
-      }
-      table {
-        min-width: 600px;
+      button, input, select {
+        width: 100%;
       }
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(255, 255, 255, 0.9));
-      animation: gradientMove 8s ease infinite alternate;
-      z-index: -1;
-    }
-    @keyframes gradientMove {
-      from {
-        background-position: 0% 50%;
-      }
-      to {
-        background-position: 100% 50%;
-      }
-    }
   </style>
 </head>
-
-<body>
+<body onload="initPrincipal()">
   <header>
-    <h2><i class="fa-solid fa-school"></i> Principal Dashboard</h2>
-    <button class="btn btn-danger">
-      <i class="fa-solid fa-right-from-bracket"></i> Logout
-    </button>
+    <h2><i class="fa-solid fa-user-tie"></i> Principal Dashboard – College Attendance Overview</h2>
+    <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
   </header>
 
-  <main>
-    <section>
-      <h3><i class="fa-solid fa-chart-line"></i> College Attendance Summary</h3>
+  <div class="container">
+    <!-- Top Summary -->
+    <div class="top-summary" id="collegeTopSummary"></div>
+
+    <!-- Attendance Section -->
+    <div class="section">
+      <h3><i class="fa-solid fa-chart-line"></i> College-Wide Attendance Summary</h3>
 
       <div class="filters">
-        <label><i class="fa-solid fa-calendar-day"></i> Date</label>
-        <input type="date" id="date" />
-        <label><i class="fa-solid fa-clock"></i> Batch</label>
-        <select id="batch">
-          <option value="FN">FN</option>
-          <option value="AN">AN</option>
-        </select>
-
-        <button class="btn"><i class="fa-solid fa-database"></i> Load</button>
-        <button class="btn"><i class="fa-solid fa-file-csv"></i> Download</button>
+        <label><i class="fa-solid fa-calendar-day"></i> Date:
+          <input type="date" id="date">
+        </label>
+        <label><i class="fa-solid fa-clock"></i> Batch:
+          <select id="batch">
+            <option value="FN">FN</option>
+            <option value="AN">AN</option>
+          </select>
+        </label>
+        <div>
+          <button class="btn" onclick="loadCollegeSummary()"><i class="fa-solid fa-eye"></i> Load Summary</button>
+          <button class="btn" onclick="downloadCollegeSummary()"><i class="fa-solid fa-file-arrow-down"></i> Download Summary</button>
+          <button class="btn" onclick="downloadAbsentReport()"><i class="fa-solid fa-user-xmark"></i> Absent CSV</button>
+          <button class="btn" onclick="downloadODReport()"><i class="fa-solid fa-id-badge"></i> OD CSV</button>
+          <button class="btn" onclick="loadAttendanceStatus()"><i class="fa-solid fa-list-check"></i> View Status</button>
+        </div>
       </div>
 
       <div class="lock-toggle">
         <label class="switch">
-          <input type="checkbox" id="lockToggle" />
-          <span class="slider" data-label="Unlocked"></span>
+          <input type="checkbox" id="lockToggleBtn" onchange="updateSliderLabel(this)">
+          <span class="slider" data-label="Unlock"></span>
         </label>
-        <span id="lockMessage">System is currently Unlocked</span>
+        <span id="lockMessage"></span>
       </div>
 
       <div id="summaryGrid"></div>
-    </section>
+      <div id="classGrid"></div>
+      <div id="statusTableArea"></div>
+    </div>
 
-    <section>
-      <h3><i class="fa-solid fa-user-tie"></i> Manage HoD Users</h3>
-
-      <div class="filters">
-        <button class="btn"><i class="fa-solid fa-download"></i> Template</button>
-        <input type="file" accept=".csv" />
-        <button class="btn"><i class="fa-solid fa-upload"></i> Upload HoDs</button>
+    <!-- Manage HOD Section -->
+    <div class="section">
+      <h3><i class="fa-solid fa-user-gear"></i> Manage HoD Users</h3>
+      <div style="margin-bottom:10px;">
+        <button class="btn" onclick="downloadHoDTemplate()"><i class="fa-solid fa-file-csv"></i> Download Template</button>
+        <input type="file" id="hodFile" class="file-input" accept=".csv">
+        <button class="btn" onclick="uploadHoDUsers()"><i class="fa-solid fa-upload"></i> Upload HoDs</button>
       </div>
 
-      <div class="table-container">
-        <table id="hodTable">
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Department</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+      <table id="hodTable">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Department</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
 
   <!-- ===== JS Functions (SAME LOGIC, FIXED EVENTS) ===== -->
 
@@ -717,6 +736,7 @@ async function toggleLock() {
   </script>
 </body>
 </html>
+
 
 
 
