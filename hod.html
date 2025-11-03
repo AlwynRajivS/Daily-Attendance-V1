@@ -15,6 +15,31 @@
       color: #1e293b;
     }
 
+.filters {
+  display: flex;
+  flex-direction: column;  /* ✅ Makes Batch appear below Date */
+  gap: 10px;               /* Adds space between lines */
+  margin-top: 10px;
+}
+
+.filters label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #1e3a8a;
+}
+
+.filters input,
+.filters select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;             /* ✅ makes it neat on all screen sizes */
+  max-width: 300px;
+}
+
+    
     h2 {
       text-align: center;
       color: #1e3a8a;
@@ -582,6 +607,7 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
 
 
