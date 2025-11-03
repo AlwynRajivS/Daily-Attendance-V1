@@ -220,19 +220,10 @@
 
       <label>Year:</label>
       <select id="yearSelect">
-        <option value="">Select</option>
-        <option>I</option>
-        <option>II</option>
-        <option>III</option>
-        <option>IV</option>
       </select>
 
       <label>Section:</label>
       <select id="sectionSelect">
-        <option value="">Select</option>
-        <option>A</option>
-        <option>B</option>
-        <option>C</option>
       </select>
 
       <button class="btn" onclick="loadStudents()">Load Students</button>
@@ -250,12 +241,42 @@
   let studentList = [];
   let isLocked = false;
 
-  function initStaff() {
-    user = requireRole("Staff");
-    if (!user) return;
-    document.getElementById("welcome").innerText =
-      `Signed in as: ${user.name} — Department: ${user.department}`;
+  async function initStaff() {
+  user = requireRole("Staff");
+  if (!user) return;
+  document.getElementById("welcome").innerText =
+    `Signed in as: ${user.name} — Department: ${user.department}`;
+
+  // 🔹 Load Year & Section dynamically
+  try {
+    const res = await apiFetch({
+      action: "getYearSectionByDepartment",
+      department: user.department
+    });
+
+    if (res.success && res.list?.length) {
+      const years = [...new Set(res.list.map(x => x.year))];
+      const sections = [...new Set(res.list.map(x => x.section))];
+
+      const yearSel = document.getElementById("yearSelect");
+      const secSel = document.getElementById("sectionSelect");
+
+      yearSel.innerHTML = '<option value="">Select</option>';
+      years.forEach(y => {
+        yearSel.innerHTML += `<option value="${y}">${y}</option>`;
+      });
+
+      secSel.innerHTML = '<option value="">Select</option>';
+      sections.forEach(s => {
+        secSel.innerHTML += `<option value="${s}">${s}</option>`;
+      });
+    } else {
+      console.warn("No class list found for department", user.department);
+    }
+  } catch (err) {
+    console.error("Failed to load Year/Section:", err);
   }
+}
 
   async function loadStudents() {
     const date = document.getElementById("dateFilter").value;
