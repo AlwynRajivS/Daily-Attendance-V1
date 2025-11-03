@@ -178,9 +178,8 @@ width:80%;
 }
 
 .logout-btn {
-  position: fixed;               /* Fixed on screen */
-  top: 15px;
-  left: 15px;                    /* Left side of the screen */
+   top: 15px;
+  left: 15px;                 /* Left side of the screen */
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
   border: none;
@@ -189,8 +188,8 @@ width:80%;
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s;
-  z-index: 999;                  /* Stays above all elements */
 }
+    
 .logout-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
@@ -238,10 +237,12 @@ width:80%;
   <div class="title">
     <i class="fa-solid fa-user-tie"></i>
     <span>HoD Dashboard – Department: <strong id="hodDept"></strong></span>
-  </div>
-  <button class="btn logout-btn" onclick="logout()">
+    <button class="btn logout-btn" onclick="logout()">
     <i class="fa-solid fa-right-from-bracket"></i> Logout
   </button>
+    
+  </div>
+  
 </header>
 
   <!-- Attendance Summary -->
@@ -580,6 +581,7 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
 
 
