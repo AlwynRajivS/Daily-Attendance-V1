@@ -167,7 +167,7 @@ width:80%;
 .topbar .title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 1.2em;
   font-weight: 600;
 }
@@ -178,13 +178,11 @@ width:80%;
 }
 
 .logout-btn {
-  top: 15px;
-  left: 5px;                 /* Left side of the screen */
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.2s;
@@ -233,16 +231,15 @@ width:80%;
 
 <body onload="initHOD()">
 
-  <header class="topbar">
+ <header class="topbar">
   <div class="title">
     <i class="fa-solid fa-user-tie"></i>
     <span>HoD Dashboard – Department: <strong id="hodDept"></strong></span>
-    <button class="btn logout-btn" onclick="logout()">
+  </div>
+
+  <button class="btn logout-btn" onclick="logout()">
     <i class="fa-solid fa-right-from-bracket"></i> Logout
   </button>
-    
-  </div>
-  
 </header>
 
   <!-- Attendance Summary -->
@@ -581,6 +578,7 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
 
 
