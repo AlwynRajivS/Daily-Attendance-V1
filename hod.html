@@ -202,6 +202,14 @@ width:80%;
   color: #ffffff;
 }
 
+    .button-group {
+  display: flex;
+  flex-direction: column;   /* ✅ Stack buttons vertically */
+  gap: 10px;                /* Add spacing between buttons */
+  margin-top: 15px;
+  align-items: flex-start;  /* Align to left side */
+}
+
 .logout-btn {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
@@ -284,12 +292,11 @@ width:80%;
           <option value="AN">AN</option>
         </select>
       </label>
-      <div>
-        <button class="btn" onclick="loadSummary()"><i class="fa-solid fa-sync"></i> Load</button>
-        <button class="btn" onclick="downloadSummaryCSV()"><i class="fa-solid fa-file-csv"></i> Class Summary</button>
-        <button class="btn" onclick="downloadStudentwiseCSV()"><i class="fa-solid fa-user-graduate"></i> Student Report</button>
-        
-      </div>
+      <div class="button-group">
+  <button class="btn" onclick="loadSummary()"><i class="fa-solid fa-sync"></i> Load</button>
+  <button class="btn" onclick="downloadSummaryCSV()"><i class="fa-solid fa-file-csv"></i> Class Summary</button>
+  <button class="btn" onclick="downloadStudentwiseCSV()"><i class="fa-solid fa-user-graduate"></i> Student Report</button>
+</div>
     </div>
     <div id="summaryGrid"></div>
   </div>
@@ -607,6 +614,7 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
 
 
