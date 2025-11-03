@@ -181,11 +181,15 @@ width:80%;
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
+  border-radius: 6px;
+  padding: 8px 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.3s;
+  width: auto;           /* ✅ prevents stretching */
+  display: inline-flex;  /* ✅ ensures compact layout */
+  align-items: center;
+  gap: 6px;
 }
     
 .logout-btn:hover {
@@ -578,6 +582,7 @@ function downloadStudentwiseCSV() {
   </script>
 </body>
 </html>
+
 
 
 
