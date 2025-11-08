@@ -4,6 +4,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Principal Dashboard – College Attendance Overview</title>
 <script src="common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -353,6 +355,16 @@ header h2 {
     <button class="btn" onclick="downloadAbsentReport()"><i class="fa-solid fa-user-xmark"></i> Absent CSV</button>
     <button class="btn" onclick="downloadODReport()"><i class="fa-solid fa-id-card"></i> OD CSV</button>
     <button class="btn" onclick="loadAttendanceStatus()"><i class="fa-solid fa-eye"></i> View Status</button>
+    <button class="btn" onclick="downloadCollegeSummaryPDF()"><i class="fa-solid fa-file-pdf"></i> Summary PDF</button>
+    <button class="btn" onclick="downloadAbsentReport()">
+  <i class="fa-solid fa-user-xmark"></i> Download Absent Report
+</button>
+
+<button class="btn" onclick="downloadODReport()">
+  <i class="fa-solid fa-user-check"></i> Download OD Report
+</button>
+
+
   </div>
 
   <div class="lock-toggle" style="text-align:center; margin-bottom:10px;">
@@ -797,35 +809,249 @@ async function toggleLock() {
   }
 }
 
+/* === PDF Downloads for Principal Dashboard === */
 
+/* Load Logo */
+async function getLogoData() {
+  const logoUrl = "logo.jpeg";
+  try {
+    const resp = await fetch(logoUrl);
+    if (!resp.ok) throw new Error("Logo not found");
+    const blob = await resp.blob();
+    const bitmap = await createImageBitmap(blob);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(bitmap, 0, 0);
+    return canvas.toDataURL("image/jpeg");
+  } catch (e) {
+    console.warn("Logo load failed:", e);
+    return null;
+  }
+}
+
+/* === College Attendance Summary PDF === */
+async function downloadCollegeSummaryPDF() {
+  if (!collegeData || collegeData.length === 0)
+    return alert("No summary data available.");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("portrait", "pt", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const logoData = await getLogoData();
+
+  const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
+  const generatedDate = new Date().toLocaleString();
+
+  const headers = ["Department", "Total", "Present", "Absent", "OD", "Attendance %"];
+  const rows = collegeData.map(d => {
+    const percent = d.total > 0 ? ((d.present / d.total) * 100).toFixed(2) : "0.00";
+    return [d.department, d.total, d.present, d.absent, d.od, `${percent}%`];
+  });
+
+  const headerHeight = 180;
+
+  doc.autoTable({
+    head: [headers],
+    body: rows,
+    startY: headerHeight,
+    theme: "grid",
+    styles: {
+      font: "times",
+      fontSize: 10,
+      halign: "center",
+      valign: "middle",
+      lineColor: 0,
+      lineWidth: 0.5
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      lineColor: 0,
+      lineWidth: 0.5
+    },
+    margin: { top: headerHeight, left: 40, right: 40 },
+    didDrawPage: function (data) {
+      // Header with logo and titles
+      if (logoData) {
+        const logoWidth = 250, logoHeight = 50;
+        doc.addImage(logoData, "JPEG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+      }
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(14);
+      doc.text("College Attendance Summary Report", pageWidth / 2, 90, { align: "center" });
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${generatedDate}`, 40, 150);
+      doc.text(`Attendance Date: ${date} (${batch})`, 400, 150);
+    }
+  });
+
+  const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
+  doc.setFont("times", "bold");
+  doc.setFontSize(12);
+  doc.text("Principal", pageWidth - 100, finalY + 80, { align: "right" });
+
+  doc.save(`College_Summary_${date}_${batch}.pdf`);
+}
+
+/* === Download Absent Students Report === */
+async function downloadAbsentReport() {
+  const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
+  const absentees = allAbsentees || []; // ensure your data variable name matches
+
+  if (!absentees.length) {
+    alert("No absent students found for this date and batch.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("portrait", "pt", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const logoData = await getLogoData();
+  const generatedDate = new Date().toLocaleString();
+
+  const headerHeight = 180;
+  const headers = ["Roll No", "Name", "Department", "Year", "Section", "Status", "Reason"];
+  const rows = absentees.map(s => [
+    s.RollNo || "",
+    s.Name || "",
+    s.Department || "",
+    s.Year || "",
+    s.Section || "",
+    "Absent",
+    s.Reason || ""
+  ]);
+
+  doc.autoTable({
+    head: [headers],
+    body: rows,
+    startY: headerHeight,
+    theme: "grid",
+    styles: {
+      font: "times",
+      fontSize: 10,
+      halign: "center",
+      valign: "middle",
+      lineColor: 0,
+      lineWidth: 0.3
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      lineColor: 0,
+      lineWidth: 0.5
+    },
+    margin: { top: headerHeight, left: 40, right: 40 },
+    didDrawPage: function (data) {
+      if (logoData) {
+        const logoWidth = 220, logoHeight = 50;
+        doc.addImage(logoData, "JPEG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+      }
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(14);
+      doc.text("STUDENT ABSENT REPORT", pageWidth / 2, 90, { align: "center" });
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${generatedDate}`, 40, 150);
+      doc.text(`Batch: ${batch}`, 280, 150);
+      doc.text(`Absent Date: ${date}`, 440, 150);
+    }
+  });
+
+  const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
+  doc.setFont("times", "bold");
+  doc.setFontSize(12);
+  doc.text("Principal", pageWidth - 100, finalY + 80, { align: "right" });
+
+  doc.save(`Absent_Report_${date}_${batch}.pdf`);
+}
+
+/* === Download OD Students Report === */
+async function downloadODReport() {
+  const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
+  const ods = allOD || []; // ensure your data variable name matches
+
+  if (!ods.length) {
+    alert("No OD students found for this date and batch.");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("portrait", "pt", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const logoData = await getLogoData();
+  const generatedDate = new Date().toLocaleString();
+
+  const headerHeight = 180;
+  const headers = ["Roll No", "Name", "Department", "Year", "Section", "Status", "Reason"];
+  const rows = ods.map(s => [
+    s.RollNo || "",
+    s.Name || "",
+    s.Department || "",
+    s.Year || "",
+    s.Section || "",
+    "OD",
+    s.Reason || ""
+  ]);
+
+  doc.autoTable({
+    head: [headers],
+    body: rows,
+    startY: headerHeight,
+    theme: "grid",
+    styles: {
+      font: "times",
+      fontSize: 10,
+      halign: "center",
+      valign: "middle",
+      lineColor: 0,
+      lineWidth: 0.3
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      lineColor: 0,
+      lineWidth: 0.5
+    },
+    margin: { top: headerHeight, left: 40, right: 40 },
+    didDrawPage: function (data) {
+      if (logoData) {
+        const logoWidth = 220, logoHeight = 50;
+        doc.addImage(logoData, "JPEG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+      }
+
+      doc.setFont("times", "bold");
+      doc.setFontSize(14);
+      doc.text("STUDENT ON-DUTY (OD) REPORT", pageWidth / 2, 90, { align: "center" });
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+      doc.text(`Generated on: ${generatedDate}`, 40, 150);
+      doc.text(`Batch: ${batch}`, 280, 150);
+      doc.text(`Absent Date: ${date}`, 440, 150);
+    }
+  });
+
+  const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
+  doc.setFont("times", "bold");
+  doc.setFontSize(12);
+  doc.text("Principal", pageWidth - 100, finalY + 80, { align: "right" });
+
+  doc.save(`OD_Report_${date}_${batch}.pdf`);
+}
 
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
