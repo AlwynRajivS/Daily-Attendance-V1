@@ -413,7 +413,7 @@
     const res = await apiFetch({ action: "saveAttendance", date, batch, updates });
 
     if (res.success) {
-      showToast(`Attendance saved successfully!`);
+      alert("Attendance saved successfully!");
       await apiFetch({
         action: "saveAttendanceStatus",
         date,
