@@ -650,6 +650,7 @@ async function downloadSummaryPDF() {
   const pageHeight = doc.internal.pageSize.getHeight();
   const logoData = await getLogoData();
   const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
   const generatedDate = new Date().toLocaleString();
 
   const headers = ["Year", "Section", "Total", "Present", "Absent", "OD", "Attendance %"];
@@ -702,7 +703,7 @@ async function downloadSummaryPDF() {
       doc.setFontSize(11);
       doc.setFont("times", "normal");
       doc.text(`Generated on: ${generatedDate}`, 40, 150);
-      doc.text(`Absent Date: ${date}`, 440, 150);
+      doc.text(`Absent Date: ${date} (${batch})`, 400, 150);
     }
   });
 
@@ -773,6 +774,7 @@ async function downloadStudentwisePDF() {
       doc.setFontSize(11);
       doc.setFont("times", "normal");
       doc.text(`Generated on: ${generatedDate}`, 40, 150);
+      doc.text(`Batch: ${batch}`, 280, 150);
       doc.text(`Absent Date: ${date}`, 440, 150);
     }
   });
