@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HoD Dashboard – Attendance & Management</title>
+  <title>HoD Dashboard - Attendance & Management</title>
   <script src="common.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -274,7 +276,7 @@ width:80%;
  <header class="topbar">
   <div class="title">
     <i class="fa-solid fa-user-tie"></i>
-    <span>HoD Dashboard – Department: <strong id="hodDept"></strong></span>
+    <span>HoD Dashboard - Department: <strong id="hodDept"></strong></span>
   </div>
 
   <button class="btn logout-btn" onclick="logout()">
@@ -299,6 +301,12 @@ width:80%;
   <button class="btn" onclick="loadSummary()"><i class="fa-solid fa-sync"></i> Load</button>
   <button class="btn" onclick="downloadSummaryCSV()"><i class="fa-solid fa-file-csv"></i> Class Summary</button>
   <button class="btn" onclick="downloadStudentwiseCSV()"><i class="fa-solid fa-user-graduate"></i> Student Report</button>
+  <button class="btn" onclick="downloadSummaryPDF()">
+    <i class="fa-solid fa-file-pdf"></i> Class Summary PDF
+</button>
+<button class="btn" onclick="downloadStudentwisePDF()">
+  <i class="fa-solid fa-file-pdf"></i> Student Report PDF
+</button>
 </div>
     </div>
     <div id="summaryGrid"></div>
@@ -347,9 +355,6 @@ width:80%;
       <div id="historySummary" style="text-align:center; margin-top:10px; font-weight:600;"></div>
     </div>
   </div>
-
-  <!-- Your existing JS logic -->
-
 
   <script>
     let hodDept = "";
@@ -614,28 +619,173 @@ function downloadStudentwiseCSV() {
       alert(data.message);
     }
 
+/* === PDF Downloads === */
+async function getLogoData() {
+  const logoUrl = "logo.jpeg"; // make sure this path is correct
+  try {
+    const resp = await fetch(logoUrl);
+    if (!resp.ok) throw new Error("Logo not found");
+    const blob = await resp.blob();
+    const bitmap = await createImageBitmap(blob);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(bitmap, 0, 0);
+    return canvas.toDataURL("image/jpeg");
+  } catch (e) {
+    console.warn("Logo load failed:", e);
+    return null;
+  }
+}
+
+/* === Class Summary PDF === */
+async function downloadSummaryPDF() {
+  if (!summaryData || Object.keys(summaryData).length === 0)
+    return alert("No summary data to download.");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("portrait", "pt", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const logoData = await getLogoData();
+  const date = document.getElementById("date").value;
+  const generatedDate = new Date().toLocaleString();
+
+  const headers = ["Year", "Section", "Total", "Present", "Absent", "OD", "Attendance %"];
+  const rows = Object.entries(summaryData).map(([key, s]) => {
+    const [year, section] = key.split("_");
+    const total = s.total || 0;
+    const present = s.present || 0;
+    const absent = s.absent || 0;
+    const od = s.od || 0;
+    const percent = total > 0 ? ((present / total) * 100).toFixed(2) : "0.00";
+    return [year, section, total, present, absent, od, `${percent}%`];
+  });
+
+  const headerHeight = 180; // reserved header space
+
+  doc.autoTable({
+    head: [headers],
+    body: rows,
+    startY: headerHeight,
+    theme: "grid",
+    styles: {
+      font: "times",
+      fontSize: 10,
+      lineColor: 0,
+      lineWidth: 0.5,
+      halign: "center",
+      valign: "middle"
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      lineColor: 0,
+      lineWidth: 0.5,
+      halign: "center",
+      valign: "middle"
+    },
+    margin: { top: headerHeight, left: 40, right: 40 }, // ✅ keeps top margin for every page
+    didDrawPage: function (data) {
+      // --- Header Section ---
+      if (logoData) {
+        const logoWidth = 250, logoHeight = 50;
+        doc.addImage(logoData, "JPEG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+      }
+
+      doc.setFontSize(14);
+      doc.setFont("times", "bold");
+      doc.text(`Department of ${hodDept}`, pageWidth / 2, 90, { align: "center" });
+      doc.text("Class Attendance Summary", pageWidth / 2, 110, { align: "center" });
+
+      doc.setFontSize(11);
+      doc.setFont("times", "normal");
+      doc.text(`Generated on: ${generatedDate}`, 40, 150);
+      doc.text(`Absent Date: ${date}`, 440, 150);
+    }
+  });
+
+  // ✅ Add HoD Signature only on the final page
+  const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
+  doc.setFontSize(12);
+  doc.setFont("times", "bold");
+  doc.text("HoD", pageWidth - 100, finalY + 80, { align: "right" });
+
+  doc.save(`ClassSummary_${hodDept}_${date}.pdf`);
+}
+
+/* === Studentwise PDF === */
+async function downloadStudentwisePDF() {
+  if (!absentees.length) return alert("No data to download");
+
+  const date = document.getElementById("date").value;
+  const batch = document.getElementById("batch").value;
+  const filtered = absentees.filter(s => s.Status === "Absent" || s.Status === "OD");
+  if (!filtered.length) return alert("No absent/OD records found for the selected date & batch.");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("portrait", "pt", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const logoData = await getLogoData();
+  const generatedDate = new Date().toLocaleString();
+
+  const headers = ["Roll No", "Name", "Year", "Section", "Status", "Reason"];
+  const rows = filtered.map(s => [s.RollNo, s.Name, s.Year, s.Section, s.Status, s.Reason || ""]);
+
+  const headerHeight = 180;
+
+  doc.autoTable({
+    head: [headers],
+    body: rows,
+    startY: headerHeight,
+    theme: "grid",
+    styles: {
+      font: "times",
+      fontSize: 10,
+      lineColor: 0,
+      lineWidth: 0.5,
+      halign: "center",
+      valign: "middle"
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      lineColor: 0,
+      lineWidth: 0.5,
+      halign: "center",
+      valign: "middle"
+    },
+    margin: { top: headerHeight, left: 40, right: 40 }, // ✅ ensures top margin for every page
+    didDrawPage: function (data) {
+      // Draw header safely on every page (not overlapping)
+      if (logoData) {
+        const logoWidth = 250, logoHeight = 50;
+        doc.addImage(logoData, "JPEG", (pageWidth - logoWidth) / 2, 20, logoWidth, logoHeight);
+      }
+
+      doc.setFontSize(14);
+      doc.setFont("times", "bold");
+      doc.text(`Department of ${hodDept}`, pageWidth / 2, 90, { align: "center" });
+      doc.text("Student Absent / OD Report", pageWidth / 2, 110, { align: "center" });
+
+      doc.setFontSize(11);
+      doc.setFont("times", "normal");
+      doc.text(`Generated on: ${generatedDate}`, 40, 150);
+      doc.text(`Absent Date: ${date}`, 440, 150);
+    }
+  });
+
+  // ✅ Add HoD Signature only on last page after table
+  const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
+  doc.setFontSize(12);
+  doc.setFont("times", "bold");
+  doc.text("HoD", pageWidth - 100, finalY + 80, { align: "right" });
+
+  doc.save(`Studentwise_Absent_OD_${hodDept}_${date}_${batch}.pdf`);
+}
+
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
