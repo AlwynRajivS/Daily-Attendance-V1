@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Faculty - Mark OD</title>
+<script src="common.js"></script>
+
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #f5f8ff, #eef3ff);
+    margin: 0;
+    padding: 20px;
+  }
+
+  h2 {
+    text-align: center;
+    color: #1e3a8a;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  .absent {
+    background: #ff6b6b !important;
+    border: 2px solid #b71c1c;
+    color: white;
+    box-shadow: 0 3px 10px rgba(183,28,28,0.3) !important;
+  }
+
+  /* FILTERS */
+  .filters {
+    text-align: center;
+    background: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .filters label {
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-right: 8px;
+  }
+
+  .filters input, 
+  .filters select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    font-size: 15px;
+    background: #fff;
+  }
+
+  /* STUDENT GRID STYLE */
+  #studentGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    padding: 10px;
+  }
+
+  .stuBox {
+    background: rgb(129, 241, 129);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+    border: 2px solid transparent;
+  }
+
+  .stuBox:hover {
+    transform: scale(1.04);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  }
+
+  /* Marked OD Color */
+  .od {
+    background: #c07be7 !important;
+    border: 2px solid #7b2cbf;
+    color: white;
+    box-shadow: 0 3px 10px rgba(123,44,191,0.3) !important;
+  }
+
+  /* SAVE BUTTON */
+  button {
+    display: block;
+    margin: 25px auto;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    font-size: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    background: #1e40af;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    #studentGrid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .stuBox {
+      padding: 15px;
+    }
+  }
+</style>
+
+</head>
+
+<body onload="loadFacultyODStudents()">
+
+<h2>Mark Absent / OD</h2>
+
+<div class="filters">
+  <label>Select Date:</label>
+  <input type="date" id="odDate" onchange="loadFacultyODStudents()">
+
+  <label>Select Batch:</label>
+  <select id="odBatch" onchange="loadFacultyODStudents()">
+    <option value="FN">FN</option>
+    <option value="AN">AN</option>
+  </select>
+</div>
+
+<div id="studentGrid"></div>
+
+<button onclick="saveOD()" style="
+  margin-top:20px; 
+  padding:12px;
+  font-size:15px;
+  background:purple;
+  color:white;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+">Save</button>
+
+
+<script>
+
+let students = [];
+let statusMap = {};   // RollNo → current status
+let originalStatus = {}; // RollNo → status when loaded
+let changedRows = new Set(); // Track only changed students
+
+async function loadFacultyODStudents() {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (!user) return location.href = "index.html";
+
+  const department = user.department;
+  const year = user.year;
+  const section = user.section;
+  const date = document.getElementById("odDate").value;
+  const batch = document.getElementById("odBatch").value;
+
+  // Fetch existing attendance
+  let existingAttendance = [];
+  if (date && batch) {
+    const attRes = await apiFetch({ action: "getAttendanceForDate", date, batch, department, year, section });
+    if (attRes.success) existingAttendance = attRes.records || [];
+  }
+
+  const res = await apiFetch({ action: "getStudentsForFacultyOD", department, year, section });
+  const grid = document.getElementById("studentGrid");
+  grid.innerHTML = "";
+
+  if (!res || !res.success || !res.students.length) return grid.innerHTML = "<div style='color:#666'>No students found.</div>";
+
+  students = res.students;
+  statusMap = {};
+  originalStatus = {};
+  changedRows.clear();
+
+  students.forEach(st => {
+    const box = document.createElement("div");
+    box.className = "stuBox";
+    box.id = st.RollNo;
+    box.innerHTML = `${st.RollNo}<br>${st.Name}`;
+
+    // Set initial status
+    const prev = existingAttendance.find(a => a.RollNo === st.RollNo);
+    const currentStatus = prev ? prev.Status : "Present";
+    statusMap[st.RollNo] = currentStatus;
+    originalStatus[st.RollNo] = currentStatus;
+    updateBoxColor(box, currentStatus);
+
+    let lastTap = 0;
+    box.addEventListener("click", () => {
+      const now = Date.now();
+      const tapGap = now - lastTap;
+
+      let newStatus;
+      if (tapGap < 300) { // Double tap → OD
+        newStatus = statusMap[st.RollNo] === "OD" ? "Present" : "OD";
+      } else { // Single tap → Absent
+        newStatus = statusMap[st.RollNo] === "Absent" ? "Present" : "Absent";
+      }
+
+      if (newStatus !== statusMap[st.RollNo]) {
+        statusMap[st.RollNo] = newStatus;
+        changedRows.add(st.RollNo); // Mark this student as changed
+        updateBoxColor(box, newStatus);
+      }
+
+      lastTap = now;
+    });
+
+    grid.appendChild(box);
+  });
+}
+
+function updateBoxColor(box, status) {
+  box.classList.remove("absent", "od");
+  if (status === "Absent") box.classList.add("absent");
+  else if (status === "OD") box.classList.add("od");
+}
+
+async function saveOD() {
+  const date = document.getElementById("odDate").value;
+  const batch = document.getElementById("odBatch").value;
+  const user = requireRole("faculty");
+  if (!date) return alert("Select date");
+
+  if (!changedRows.size) return alert("No changes to save.");
+
+  const updates = [];
+
+  changedRows.forEach(roll => {
+    const st = students.find(s => s.RollNo === roll);
+    if (st) {
+      updates.push({
+        RollNo: st.RollNo,
+        Name: st.Name,
+        ParentName: st.ParentName,
+        ParentPhone: st.ParentPhone,
+        Department: user.department,
+        Year: user.year,
+        Section: user.section,
+        Status: statusMap[roll] // Only changed status
+      });
+    }
+  });
+
+  const res = await apiFetch({ action: "saveAttendance", date, batch, updates });
+
+  if (res && res.success) {
+    alert("Attendance updated successfully!");
+    // Update originalStatus to current status
+    changedRows.forEach(roll => originalStatus[roll] = statusMap[roll]);
+    changedRows.clear();
+  } else {
+    alert("Error: " + (res?.message || "Unknown error"));
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadFacultyODStudents);
+</script>
+
+</body>
+</html>
