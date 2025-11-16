@@ -13,30 +13,30 @@
       box-sizing: border-box;
     }
 
-    /* ---------- Full Screen Layout ---------- */
+    /* FULL SCREEN CENTER */
     body {
       height: 100vh;
       width: 100vw;
-      overflow: hidden;     /* IMPORTANT – No scrolling */
+      overflow: hidden;      /* No scrolling */
       display: flex;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; /* center left-right */
+      align-items: center;     /* center top-bottom */
       background: linear-gradient(145deg, #1e3a8a, #2563eb);
       font-family: "Segoe UI", sans-serif;
     }
 
-    /* ---------- Card ---------- */
+    /* CARD */
     .card {
       width: 90%;
       max-width: 340px;
-      background: white;
+      background: #ffffff;
       padding: 25px 22px;
       border-radius: 16px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.25);
       text-align: center;
     }
 
-    /* ---------- Title Inside Card ---------- */
+    /* TITLE */
     .login-title {
       font-size: 1.5em;
       font-weight: 600;
@@ -44,7 +44,7 @@
       margin-bottom: 18px;
     }
 
-    /* ---------- Input Fields ---------- */
+    /* INPUT BOX */
     .input-box {
       position: relative;
       margin-bottom: 18px;
@@ -69,7 +69,7 @@
       color: #2563eb;
     }
 
-    /* ---------- Button ---------- */
+    /* BUTTON */
     button {
       width: 100%;
       padding: 12px;
@@ -85,14 +85,6 @@
 
     button:active {
       transform: scale(0.98);
-    }
-
-    /* ---------- Mobile Height Fix ---------- */
-    @media (max-height: 700px) {
-      body {
-        align-items: flex-start;
-        padding-top: 30px;
-      }
     }
   </style>
 </head>
