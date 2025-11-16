@@ -1,7 +1,7 @@
 // === common.js ===
 
 // Paste your Google Apps Script Web App URL below
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1yDx_sIFsc5cfLuEmdZJtcTrdEyMhTUxXgp9BFnj1K6AAu3Vdhho4xg_vojPg71Ax/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlf9uHWy-Bs_nNP44eXdLXyfnl6CRtP28KKYKdLwra9WeSMmgFYJQsm-atX0HMCknq/exec";
 
 /* === API Helper === */
 async function apiFetch(payload) {
@@ -46,7 +46,7 @@ async function handleLogin() {
     role: res.role,
     department: res.department,
     year: res.year,
-    section: res.section
+    section: res.section,
   }));
 
   // Normalize role
@@ -69,10 +69,6 @@ function logout() {
   location.href = "index.html";
 }
 
-
-
-
-
-
-
-
+function openPriorOD() {
+    window.location.href = "prior_od.html";
+}
