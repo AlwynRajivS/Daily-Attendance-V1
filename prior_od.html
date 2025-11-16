@@ -108,16 +108,19 @@
 
   /* Mobile Responsive */
   @media (max-width: 768px) {
+
   #studentGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);  /* EXACT 2 COLUMNS */
-    gap: 10px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;  /* EXACT 2 COLUMNS */
+    gap: 10px !important;
   }
 
-  .stuBox {
-    padding: 5px;
+  #studentGrid .stuBox {
+    width: 100% !important;
+    padding: 5px !important;
   }
 }
+
 </style>
 
 </head>
