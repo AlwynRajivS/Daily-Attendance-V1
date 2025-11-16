@@ -7,81 +7,57 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    /* ---------- Global Layout ---------- */
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: "Segoe UI", sans-serif;
+      box-sizing: border-box;
+    }
+
+    /* ---------- Full Screen Layout ---------- */
+    body {
       height: 100vh;
+      width: 100vw;
+      overflow: hidden;     /* IMPORTANT – No scrolling */
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
-      overflow: hidden;
-    }
-
-    /* ---------- Animated subtle background ---------- */
-    .background {
-      position: absolute;
-      width: 140%;
-      height: 140%;
-      background: radial-gradient(circle at top left, rgba(255,255,255,0.08) 0%, transparent 60%),
-                  radial-gradient(circle at bottom right, rgba(255,255,255,0.08) 0%, transparent 60%);
-      animation: bgMove 12s infinite alternate;
-      z-index: -1;
-    }
-
-    @keyframes bgMove {
-      0% { transform: scale(1) translate(0,0); }
-      100% { transform: scale(1.1) translate(-40px, -40px); }
+      background: linear-gradient(145deg, #1e3a8a, #2563eb);
+      font-family: "Segoe UI", sans-serif;
     }
 
     /* ---------- Card ---------- */
     .card {
-      width: 88%;
+      width: 90%;
       max-width: 340px;
-      background: #ffffffee;
-      padding: 30px 25px;
+      background: white;
+      padding: 25px 22px;
       border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      animation: fadeIn 0.8s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ---------- Header Title ---------- */
-    .login-title {
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
       text-align: center;
-      font-size: 1.6em;
-      font-weight: bold;
-      margin-bottom: 25px;
-      color: #1e3a8a;
-      letter-spacing: 0.5px;
     }
 
-    /* ---------- Input Field ---------- */
+    /* ---------- Title Inside Card ---------- */
+    .login-title {
+      font-size: 1.5em;
+      font-weight: 600;
+      color: #1e3a8a;
+      margin-bottom: 18px;
+    }
+
+    /* ---------- Input Fields ---------- */
     .input-box {
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .input-box input {
       width: 100%;
-      padding: 12px 45px 12px 12px;
+      padding: 12px 42px 12px 12px;
       border-radius: 10px;
       border: 1px solid #cbd5e1;
       background: #f8fafc;
       outline: none;
       font-size: 1em;
-      transition: 0.25s;
-    }
-
-    .input-box input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 8px rgba(37,99,235,0.4);
     }
 
     .input-box i {
@@ -102,33 +78,28 @@
       border: none;
       border-radius: 10px;
       font-size: 1.1em;
-      font-weight: 600;
+      font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
+      margin-top: 8px;
     }
 
-    button:hover {
-      background: #1e3a8a;
-      transform: scale(1.03);
+    button:active {
+      transform: scale(0.98);
     }
 
-    @media (max-width: 480px) {
-      .card {
-        padding: 25px 20px;
-      }
-      .login-title {
-        font-size: 1.4em;
+    /* ---------- Mobile Height Fix ---------- */
+    @media (max-height: 700px) {
+      body {
+        align-items: flex-start;
+        padding-top: 30px;
       }
     }
   </style>
 </head>
 
 <body>
-  
-  <div class="background"></div>
 
   <div class="card">
-
     <div class="login-title">
       <i class="fa-solid fa-user-check"></i> Attendance Login
     </div>
@@ -146,7 +117,6 @@
     <button onclick="handleLogin()">
       <i class="fa-solid fa-right-to-bracket"></i> Login
     </button>
-
   </div>
 
 </body>
