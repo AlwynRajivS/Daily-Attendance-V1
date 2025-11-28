@@ -1,7 +1,7 @@
 // === common.js ===
 
 // Paste your Google Apps Script Web App URL below
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlf9uHWy-Bs_nNP44eXdLXyfnl6CRtP28KKYKdLwra9WeSMmgFYJQsm-atX0HMCknq/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxp2TpsAocEj5YqXrpIaQ78WxbCz02_jEAsgUuu1CPBRskbkBymhYZVvXh5U1J_JbE/exec";
 
 /* === API Helper === */
 async function apiFetch(payload) {
@@ -72,3 +72,4 @@ function logout() {
 function openPriorOD() {
     window.location.href = "prior_od.html";
 }
+
