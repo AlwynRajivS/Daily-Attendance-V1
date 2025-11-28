@@ -128,7 +128,9 @@
     padding:20px;
     border-radius:10px;
     width:90%;
-    max-width:420px;
+    max-width:600px;
+    max-height:80vh;        /* <--- Added */
+    overflow-y:auto;        /* <--- Added */
     box-shadow:0 2px 10px rgba(0,0,0,0.3);
     animation: fadeIn 0.3s ease;
   }
@@ -236,6 +238,7 @@
 </div>
 
 <button class="save" onclick="openPriorODModal()">Prior Absent / OD Entry</button>
+<button class="save" onclick="openStudentsModal()">📋 View / Edit Class Students Data</button>
 
 <div class="filters">
   <label>🗓️ Date: <input type="date" id="date"></label>
@@ -321,7 +324,98 @@
     </div>
 </div>
 
+<!-- Student Details Modal -->
+<div id="studentsModal" class="modal">
+  <div class="modal-content" style="max-width:600px;">
+    <button class="close-btn" onclick="closeStudentsModal()">X</button>
+    <h3>📘 Class Student Details</h3>
+
+    <div style="max-height:60vh; overflow-y:auto;">
+<table style="width:100%; border-collapse:collapse; margin-top:10px;">
+
+      <thead style="background:#1e3a8a; color:white;">
+        <tr>
+          <th>Roll No</th>
+          <th>Name</th>
+          <th>Parent Phone</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="studentsBody"></tbody>
+    </table>
+  </div>
+</div>
+
   <script>
+
+    async function openStudentsModal() {
+  const facultyEmail = localStorage.getItem("facultyEmail");
+  if (!facultyEmail) return alert("Faculty email not found");
+
+  const user = JSON.parse(localStorage.getItem("user"));
+const res = await fetch(SCRIPT_URL, {
+  method: "POST",
+  body: JSON.stringify({
+    action: "getStudentsForFaculty",
+    department: user.department,
+    year: user.year,
+    section: user.section
+  })
+});
+
+  const data = await res.json();
+  if (!data.success || !data.students.length) {
+    alert("No students found!");
+    return;
+  }
+
+  const tbody = document.getElementById("studentsBody");
+  tbody.innerHTML = "";
+
+  data.students.forEach((s, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${s.RollNo}</td>
+        <td>${s.Name}</td>
+        <td id="phone_${i}">${s.ParentPhone || "-"}</td>
+        <td>
+          <button class="btn" onclick="editStudentPhone('${s.RollNo}', ${i})">Edit</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("studentsModal").style.display = "flex";
+}
+
+function closeStudentsModal() {
+  document.getElementById("studentsModal").style.display = "none";
+}
+
+// Edit parent phone number
+async function editStudentPhone(rollNo, index) {
+  const currentPhone = document.getElementById("phone_" + index).innerText;
+  const newPhone = prompt("Enter new Parent Phone:", currentPhone);
+
+  if (!newPhone || newPhone.trim() === "") return;
+
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "updateParentPhone",
+      rollNo,
+      newPhone
+    })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+
+  if (data.success) {
+    document.getElementById("phone_" + index).innerText = newPhone;
+  }
+}
+
 function openPriorODModal() {
   const user = requireRole("faculty");
   if (!user) return;
