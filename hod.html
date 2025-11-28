@@ -732,8 +732,8 @@ async function downloadStudentwisePDF() {
   const logoData = await getLogoData();
   const generatedDate = new Date().toLocaleString();
 
-  const headers = ["Roll No", "Name", "Year", "Section", "Status", "Reason"];
-  const rows = filtered.map(s => [s.RollNo, s.Name, s.Year, s.Section, s.Status, s.Reason || ""]);
+  const headers = ["S.No", "Roll No", "Name", "Year", "Section", "Status", "Reason"];
+  const rows = filtered.map((s, index) => [index + 1,  s.RollNo, s.Name, s.Year, s.Section, s.Status, s.Reason || ""]);
 
   const headerHeight = 180;
 
@@ -749,6 +749,9 @@ async function downloadStudentwisePDF() {
       lineWidth: 0.5,
       halign: "center",
       valign: "middle"
+    },
+    columnStyles: {
+      2: { halign: "left" }
     },
     headStyles: {
       fillColor: [255, 255, 255],
@@ -779,11 +782,27 @@ async function downloadStudentwisePDF() {
     }
   });
 
-  // ✅ Add HoD Signature only on last page after table
-  const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
-  doc.setFontSize(12);
-  doc.setFont("times", "bold");
-  doc.text("HoD", pageWidth - 100, finalY + 80, { align: "right" });
+  // Add HoD Signature only on last page after table
+  //const finalY = doc.lastAutoTable.finalY || pageHeight - 80;
+  //doc.setFontSize(12);
+  //doc.setFont("times", "bold");
+  //doc.text("HoD", pageWidth - 100, finalY + 80, { align: "right" });
+
+  //doc.save(`Studentwise_Absent_OD_${hodDept}_${date}_${batch}.pdf`);
+
+  const finalY = doc.lastAutoTable.finalY;
+  const spaceRequired = 100;
+
+  if (finalY + spaceRequired > pageHeight - 40) {
+    doc.addPage();
+    doc.setFontSize(12);
+    doc.setFont("times", "bold");
+    doc.text("HoD", pageWidth - 100, 120, { align: "right" });
+  } else {
+    doc.setFontSize(12);
+    doc.setFont("times", "bold");
+    doc.text("HoD", pageWidth - 100, finalY + 60, { align: "right" });
+  }
 
   doc.save(`Studentwise_Absent_OD_${hodDept}_${date}_${batch}.pdf`);
 }
